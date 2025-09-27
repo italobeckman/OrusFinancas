@@ -1,0 +1,53 @@
+@model OrusFinancas.Models.Conta
+@using OrusFinancas.Models 
+
+@{
+    ViewData["Title"] = "Nova Conta";
+}
+
+
+@if (TempData["Sucesso"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Sucesso!</strong> @TempData["Sucesso"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<h1>Cadastrar Nova Conta</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="NomeBanco" class="control-label"></label>
+                <select asp-for="NomeBanco" class="form-control" asp-items="Html.GetEnumSelectList<Bancos>()"></select>
+                <span asp-validation-for="NomeBanco" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="Tipo" class="control-label"></label>
+                <select asp-for="Tipo" class="form-control" asp-items="Html.GetEnumSelectList<TipoConta>()"></select>
+                <span asp-validation-for="Tipo" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="SaldoInicial" class="control-label"></label>
+                <input asp-for="SaldoInicial" class="form-control" type="number" step="0.01" /> 
+                <span asp-validation-for="SaldoInicial" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mt-4">
+                <input type="submit" value="Salvar Conta" class="btn btn-success" />
+                <a asp-action="Index" class="btn btn-secondary">Voltar para a Lista</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

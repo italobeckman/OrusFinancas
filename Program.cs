@@ -13,7 +13,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<Contexto>
     (options => options.UseSqlServer("Server=localhost,1433;Database=bancoOrus;User Id=sa;Password=SuaSenhaForte123@;TrustServerCertificate=True;"));
 
-// Adicionar o serviço de autenticação com o esquema de Cookies
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {

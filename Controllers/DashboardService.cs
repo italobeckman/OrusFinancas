@@ -23,15 +23,15 @@ public class DashboardService
 
         // 1. CÁLCULO DE BALANÇO (Sua Lógica Adaptada)
         var receitas = await _contexto.Receitas
-            .Where(r => r.Conta.UsuarioId == userId && r.DataTransacao.Month == mesAtual && r.DataTransacao.Year == anoAtual)
+            .Where(r => r.Conta.Usuario.Id == userId && r.DataTransacao.Month == mesAtual && r.DataTransacao.Year == anoAtual)
             .SumAsync(r => (decimal?)r.Valor) ?? 0m; 
         
         var despesas = await _contexto.Despesas
-            .Where(d => d.Conta.UsuarioId == userId && d.DataTransacao.Month == mesAtual && d.DataTransacao.Year == anoAtual)
+            .Where(d => d.Conta.Usuario.Id == userId && d.DataTransacao.Month == mesAtual && d.DataTransacao.Year == anoAtual)
             .SumAsync(d => (decimal?)d.Valor) ?? 0m;
         
         var maiorDespesa = await _contexto.Despesas
-            .Where(d => d.Conta.UsuarioId == userId && d.DataTransacao.Month == mesAtual && d.DataTransacao.Year == anoAtual)
+            .Where(d => d.Conta.Usuario.Id == userId && d.DataTransacao.Month == mesAtual && d.DataTransacao.Year == anoAtual)
             .OrderByDescending(d => d.Valor)
             .FirstOrDefaultAsync();
 
