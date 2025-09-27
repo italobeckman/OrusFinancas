@@ -1,32 +1,35 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using OrusFinancas.Models;
+using System.Threading.Tasks;
+using OrusFinancas.Models.ViewModels;
+using OrusFinancas.ViewModels; // Necessário para o ViewModel
 
 namespace OrusFinancas.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly DashboardService _dashboardService; // Serviço injetado
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, DashboardService dashboardService)
         {
             _logger = logger;
+            _dashboardService = dashboardService;
         }
 
-        public IActionResult Index()
+        // Alteração para async Task<IActionResult>
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
+            // --- ATENÇÃO: Substitua pelo ID real do usuário logado ---
+            var usuarioId = 1; 
+            // -------------------------------------------------------------
 
-        public IActionResult Privacy()
-        {
-            return View();
+            // Delega a responsabilidade total ao serviço
+            HomeDashboardViewModel viewModel = await _dashboardService.GetDashboardDataAsync(usuarioId);
+            
+            // Retorna o ViewModel fortemente tipado (Sem ViewBags)
+            return View(viewModel);
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        
+        // ... Outros métodos ...
     }
 }

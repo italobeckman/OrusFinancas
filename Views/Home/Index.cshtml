@@ -1,8 +1,131 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model OrusFinancas.ViewModels.HomeDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard | Órus Finanças";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Usuarios</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h1 class="display-5 fw-bold text-success mb-4">
+    Bem-vindo(a) ao Órus Finanças!
+</h1>
+
+<div class="row mb-5">
+    <div class="col-lg-8">
+        @* REQUISITO: Visualização de um resumo financeiro (Balanço) *@
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-success text-white fw-bold">
+                Resumo Financeiro
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h2 class="text-primary">@Model.ReceitasTotal.ToString("C")</h2>
+                        <p class="text-muted">Receitas no Mês</p>
+                    </div>
+                    <div class="col-4 border-start border-end">
+                        <h2 class="text-danger">@Model.DespesasTotal.ToString("C")</h2>
+                        <p class="text-muted">Despesas no Mês</p>
+                    </div>
+                    <div class="col-4">
+                        @if (Model.BalancoTotal >= 0)
+                        {
+                            <h2 class="text-success">@Model.BalancoTotal.ToString("C")</h2>
+                        }
+                        else
+                        {
+                            <h2 class="text-danger">@Model.BalancoTotal.ToString("C")</h2>
+                        }
+                        <p class="text-muted fw-bold">BALANÇO (Receitas - Despesas)</p>
+                    </div>
+                </div>
+                <hr />
+                @* REQUISITO: Maiores despesas *@
+                <p class="mt-3">
+                    {{-- Protegido com o ViewModel que garante que MaiorDespesaDescricao não é null --}}
+                    <strong>Maior Despesa:</strong> <span class="text-danger">@Model.MaiorDespesaDescricao (@Model.MaiorDespesaValor.ToString("C"))</span>
+                </p>
+            </div>
+        </div>
+
+        @* REQUISITO: Acompanhamento do status dos orçamentos definidos *@
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-secondary text-white fw-bold">
+                Orçamentos (Budgets) Mensais
+            </div>
+            <div class="card-body">
+                @if (Model.Orcamentos.Count > 0)
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var orcamento in Model.Orcamentos)
+                        {
+                            // Lógica para calcular a porcentagem de uso
+                            var percentualUso = orcamento.Gasto / orcamento.Limite * 100;
+                            var progressBarClass = percentualUso < 80 ? "bg-info" : percentualUso < 100 ? "bg-warning" : "bg-danger";
+
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-semibold">@orcamento.CategoriaNome</span>
+                                    <div>
+                                        <small class="text-muted me-2">@orcamento.Gasto.ToString("C") de @orcamento.Limite.ToString("C")</small>
+                                        <span class="badge @(percentualUso >= 100 ? "bg-danger" : "bg-primary")">@percentualUso.ToString("F0")%</span>
+                                    </div>
+                                </div>
+                                <div class="progress mt-1" style="height: 6px;">
+                                    <div class="progress-bar @progressBarClass" role="progressbar" style="width: @percentualUso%;" aria-valuenow="@percentualUso" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">Nenhum orçamento definido para este mês. <a asp-controller="Orcamento" asp-action="Create">Crie seu primeiro orçamento!</a></p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        @* REQUISITO: Destaque para o "Insight Financeiro" gerado para o dia. *@
+        <div class="card bg-success text-white shadow-lg mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-lightbulb-fill me-2"></i> Insight Financeiro do Dia</h5>
+                <p class="card-text fs-6 mt-3">
+                    @Model.InsightDiario
+                </p>
+                <a asp-controller="Insight" asp-action="Index" class="btn btn-sm btn-light">Ver todos os Insights</a>
+            </div>
+        </div>
+
+        @* REQUISITO: Visualização das próximas assinaturas a serem pagas. *@
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white fw-bold">
+                Próximas Recorrências
+            </div>
+            <div class="card-body">
+                @if (Model.ProximasAssinaturas.Count > 0)
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var assinatura in Model.ProximasAssinaturas)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-semibold">@assinatura.Servico</span><br />
+                                    {{-- PROTEÇÃO COM ?.: Se a Conta ou Categoria for acessada aqui, use ? --}}
+                                    <small class="text-muted">
+                                        Vence em @assinatura.DataAssinatura.ToString("00")/@DateTime.Today.Month.ToString("00")
+                                    </small>
+                                </div>
+                                <span class="text-danger fw-bold">@assinatura.ValorMensal.ToString("C")</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">Você não tem assinaturas próximas. Tudo sob controle!</p>
+                }
+                <a asp-controller="Assinatura" asp-action="Index" class="btn btn-sm btn-outline-dark mt-3 w-100">Gerenciar Assinaturas</a>
+            </div>
+        </div>
+    </div>
 </div>

@@ -18,7 +18,7 @@ namespace OrusFinancas.Models
 
         // Relacionamento com Conta (N:1)
         public int ContaId { get; set; }
-        public Conta? Conta { get; set; }
+        public Conta Conta { get; set; } = new Conta();
 
         // Relacionamento com Categoria (N:1)
         public int CategoriaId { get; set; }

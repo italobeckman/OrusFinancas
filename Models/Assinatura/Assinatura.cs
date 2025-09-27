@@ -23,5 +23,9 @@ namespace OrusFinancas.Models
         // Assumindo Assinatura tem N Despesas:
         public int DespesaId { get; set; }
         public Despesa? Despesa { get; set; } // Aqui seria Despesa Gerada
+
+        public bool Ativa { get; set; }
+
+        public DateTime DataAssinatura { get; set; }
     }
 }
