@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using OrusFinancas.Models;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -10,6 +12,15 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<Contexto>
     (options => options.UseSqlServer("Server=localhost,1433;Database=bancoOrus;User Id=sa;Password=SuaSenhaForte123@;TrustServerCertificate=True;"));
+
+// Adicionar o serviço de autenticação com o esquema de Cookies
+builder.Services.AddAuthentication("Cookies") 
+    .AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/Usuario/Login"; // Define a URL para redirecionar em caso de não autenticado
+        options.AccessDeniedPath = "/Usuario/AcessoNegado"; // Opcional
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Duração do Cookie
+    });
 
 var app = builder.Build();
 
@@ -26,6 +37,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

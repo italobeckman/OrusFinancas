@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrusFinancas.Models;
 
@@ -11,9 +12,11 @@ using OrusFinancas.Models;
 namespace OrusFinancas.Migrations
 {
     [DbContext(typeof(Contexto))]
-    partial class ContextoModelSnapshot : ModelSnapshot
+    [Migration("20250927141601_AjusteAssinaturaUnidirecional")]
+    partial class AjusteAssinaturaUnidirecional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace OrusFinancas.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Assinatura", (string)null);
+                    b.ToTable("Assinatura");
                 });
 
             modelBuilder.Entity("OrusFinancas.Models.Categoria", b =>
@@ -72,7 +75,7 @@ namespace OrusFinancas.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Categoria", (string)null);
+                    b.ToTable("Categoria");
                 });
 
             modelBuilder.Entity("OrusFinancas.Models.Conta", b =>
@@ -98,7 +101,7 @@ namespace OrusFinancas.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Conta", (string)null);
+                    b.ToTable("Conta");
                 });
 
             modelBuilder.Entity("OrusFinancas.Models.InsightFinanceiro", b =>
@@ -127,7 +130,7 @@ namespace OrusFinancas.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("InsightFinanceiro", (string)null);
+                    b.ToTable("InsightFinanceiro");
                 });
 
             modelBuilder.Entity("OrusFinancas.Models.Orcamento", b =>
@@ -152,7 +155,7 @@ namespace OrusFinancas.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Orcamento", (string)null);
+                    b.ToTable("Orcamento");
                 });
 
             modelBuilder.Entity("OrusFinancas.Models.PerfilFinanceiro", b =>
@@ -176,7 +179,7 @@ namespace OrusFinancas.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("PerfilFinanceiro", (string)null);
+                    b.ToTable("PerfilFinanceiro");
                 });
 
             modelBuilder.Entity("OrusFinancas.Models.Transacao", b =>
@@ -214,7 +217,7 @@ namespace OrusFinancas.Migrations
 
                     b.HasIndex("ContaId");
 
-                    b.ToTable("Transacao", (string)null);
+                    b.ToTable("Transacao");
 
                     b.HasDiscriminator().HasValue("Transacao");
 
@@ -249,14 +252,14 @@ namespace OrusFinancas.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Usuario", (string)null);
+                    b.ToTable("Usuario");
                 });
 
             modelBuilder.Entity("OrusFinancas.Models.Despesa", b =>
                 {
                     b.HasBaseType("OrusFinancas.Models.Transacao");
 
-                    b.ToTable("Transacao", (string)null);
+                    b.ToTable("Transacao");
 
                     b.HasDiscriminator().HasValue("Despesa");
                 });
@@ -265,7 +268,7 @@ namespace OrusFinancas.Migrations
                 {
                     b.HasBaseType("OrusFinancas.Models.Transacao");
 
-                    b.ToTable("Transacao", (string)null);
+                    b.ToTable("Transacao");
 
                     b.HasDiscriminator().HasValue("Receita");
                 });

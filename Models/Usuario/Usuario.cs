@@ -7,31 +7,25 @@ namespace OrusFinancas.Models
     [Table("Usuario")]
     public class Usuario
     {
-        [Column("Id")]
-        [Display(Name = "Código")]
+        // Campos que VÃO para o banco de dados (Entidade)
+        
         public int Id { get; set; }
 
-        [Column("Nome")]
-        [Display(Name = "Nome Completo")]
-        [Required(ErrorMessage = "O nome é obrigatório.")]
-        [StringLength(100, ErrorMessage = "O nome deve ter no máximo 100 caracteres.")]
+        [Required]
+        [StringLength(100)]
         public string Nome { get; set; } = string.Empty;
 
-        [Column("Email")]
-        [Display(Name = "E-mail")]
-        [Required(ErrorMessage = "O e-mail é obrigatório.")]
-        [EmailAddress(ErrorMessage = "E-mail inválido.")]
+        [Required]
         [StringLength(150)]
-        [ConcurrencyCheck]
         public string Email { get; set; } = string.Empty;
 
-        [Column("SenhaHash")]
-        [Display(Name = "Senha")]
-        [Required]
+        // ESTE É O CAMPO DE SEGURANÇA. Guarda o hash, não a senha pura.
+        [Column("SenhaHash")] 
         public string SenhaHash { get; set; } = string.Empty;
 
-        [Column("DataCadastro")]
-        [Display(Name = "Data de Cadastro")]
         public DateTime DataCadastro { get; set; } = DateTime.UtcNow;
+        
+        // Coloque aqui todas as suas propriedades de navegação (ICollection<T> e outros)
+        // public ICollection<Conta> Contas { get; set; } = new List<Conta>();
     }
 }

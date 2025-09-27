@@ -1,0 +1,44 @@
+@model OrusFinancas.Models.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h1 class="display-4">Acessar Conta</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-5">
+        <form asp-action="Login">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="text-danger">@ViewData["ErrorMessage"]</div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="SenhaPura" class="control-label"></label>
+                <input asp-for="SenhaPura" class="form-control" />
+                <span asp-validation-for="SenhaPura" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group form-check mb-4">
+                <input class="form-check-input" asp-for="LembrarMe" />
+                <label class="form-check-label" asp-for="LembrarMe"></label>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Entrar" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
