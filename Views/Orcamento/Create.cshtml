@@ -1,0 +1,77 @@
+@model OrusFinancas.Models.Orcamento
+
+@{
+    ViewData["Title"] = "Novo Orçamento";
+}
+
+<h1>Novo Orçamento</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            
+            <div class="mb-3">
+                <label asp-for="Nome" class="form-label">Nome do Orçamento *</label>
+                <input asp-for="Nome" class="form-control" placeholder="Ex: Alimentação, Transporte, Lazer..." />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+                <div class="form-text">Dê um nome descritivo para identificar facilmente este orçamento</div>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="ValorLimite" class="form-label">Valor Limite Mensal *</label>
+                <div class="input-group">
+                    <span class="input-group-text">R$</span>
+                    <input asp-for="ValorLimite" class="form-control" placeholder="0,00" step="0.01" />
+                </div>
+                <span asp-validation-for="ValorLimite" class="text-danger"></span>
+                <div class="form-text">Defina o valor máximo que você pretende gastar neste mês</div>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-save"></i> Salvar Orçamento
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6 class="card-title">?? Dicas de Orçamento</h6>
+                <ul class="list-unstyled small">
+                    <li>• <strong>Seja realista:</strong> Baseie-se no seu histórico de gastos</li>
+                    <li>• <strong>Categorize bem:</strong> Crie orçamentos específicos por tipo de gasto</li>
+                    <li>• <strong>Monitore regularmente:</strong> Acompanhe seu progresso durante o mês</li>
+                    <li>• <strong>Ajuste quando necessário:</strong> Orçamentos podem ser refinados</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card bg-success text-white mt-3">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-bell"></i> Sistema de Alertas</h6>
+                <p class="card-text small mb-0">
+                    Você será alertado quando atingir 80% e 100% do limite definido.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card bg-info text-white mt-3">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-calendar-check"></i> Período</h6>
+                <p class="card-text small mb-0">
+                    Os orçamentos são calculados mensalmente, resetando a cada novo mês.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

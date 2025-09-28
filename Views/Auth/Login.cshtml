@@ -1,0 +1,55 @@
+@model OrusFinancas.Models.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Entrar";
+    Layout = "_LayoutAuth";
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="text-center mb-4">
+            <h2 class="text-success mb-1">Órus Finanças</h2>
+            <p class="text-muted">Entre na sua conta</p>
+        </div>
+
+        <form asp-action="Login" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">E-mail</label>
+                <input asp-for="Email" class="form-control" placeholder="Digite seu e-mail" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SenhaPura" class="form-label">Senha</label>
+                <input asp-for="SenhaPura" class="form-control" placeholder="Digite sua senha" />
+                <span asp-validation-for="SenhaPura" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 form-check">
+                <input asp-for="LembrarMe" class="form-check-input" />
+                <label asp-for="LembrarMe" class="form-check-label">
+                    Lembrar-me
+                </label>
+            </div>
+
+            <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center">
+            <p class="mb-0">
+                Não tem uma conta? 
+                <a asp-action="Register" class="text-decoration-none fw-bold">Cadastre-se aqui</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

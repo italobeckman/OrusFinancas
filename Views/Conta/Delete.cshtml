@@ -1,0 +1,119 @@
+@model OrusFinancas.Models.Conta
+
+@{
+    ViewData["Title"] = "Excluir Conta";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 text-danger">??? Excluir Conta</h2>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<div class="alert alert-danger">
+    <h5><i class="bi bi-exclamation-triangle"></i> Atenção!</h5>
+    <p class="mb-0">
+        Você está prestes a excluir permanentemente esta conta. Esta ação não pode ser desfeita.
+    </p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Confirmar Exclusão</h5>
+            </div>
+            <div class="card-body">
+                <h5>Tem certeza de que deseja excluir esta conta?</h5>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Banco:</dt>
+                            <dd class="col-sm-7">
+                                <i class="bi bi-bank me-1"></i>
+                                @Html.DisplayFor(model => model.NomeBanco)
+                            </dd>
+                            
+                            <dt class="col-sm-5">Tipo:</dt>
+                            <dd class="col-sm-7">
+                                <span class="badge bg-secondary">@Html.DisplayFor(model => model.Tipo)</span>
+                            </dd>
+                            
+                            <dt class="col-sm-5">Saldo Inicial:</dt>
+                            <dd class="col-sm-7">@Model.SaldoInicial.ToString("C")</dd>
+                            
+                            <dt class="col-sm-5">Saldo Atual:</dt>
+                            <dd class="col-sm-7">
+                                <span class="@(Model.SaldoAtual >= 0 ? "text-success" : "text-danger") fw-bold">
+                                    @Model.SaldoAtual.ToString("C")
+                                </span>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                
+                <form asp-action="Delete" method="post" class="mt-4">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Sim, excluir conta
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary ms-2">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0">?? Consequências da Exclusão</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-3">
+                        <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                        <small><strong>Transações:</strong> Todas as transações associadas a esta conta podem ser afetadas</small>
+                    </li>
+                    <li class="mb-3">
+                        <i class="bi bi-arrow-repeat text-info me-2"></i>
+                        <small><strong>Assinaturas:</strong> Assinaturas vinculadas a esta conta precisarão ser reconfiguradas</small>
+                    </li>
+                    <li class="mb-3">
+                        <i class="bi bi-graph-down text-danger me-2"></i>
+                        <small><strong>Relatórios:</strong> Dados históricos desta conta serão perdidos</small>
+                    </li>
+                    <li>
+                        <i class="bi bi-shield-x text-danger me-2"></i>
+                        <small><strong>Irreversível:</strong> Esta ação não pode ser desfeita</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        @if (Model.SaldoAtual != 0)
+        {
+            <div class="alert alert-warning mt-3">
+                <h6 class="alert-heading">Saldo Pendente</h6>
+                <p class="mb-0">
+                    Esta conta possui um saldo de <strong>@Model.SaldoAtual.ToString("C")</strong>.
+                    Considere transferir ou registrar transações antes de excluir.
+                </p>
+            </div>
+        }
+        
+        <div class="mt-3">
+            <p class="text-muted small">
+                <i class="bi bi-lightbulb me-1"></i>
+                <strong>Dica:</strong> Se você não usa mais esta conta, considere apenas não usá-la em novas transações em vez de excluí-la.
+            </p>
+        </div>
+    </div>
+</div>

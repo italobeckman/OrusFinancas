@@ -1,0 +1,154 @@
+@model IEnumerable<OrusFinancas.Models.Conta>
+@using OrusFinancas.Extensions
+
+@{
+    ViewData["Title"] = "Minhas Contas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary"><i class="bi bi-wallet2"></i> Minhas Contas</h2>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Nova Conta
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var conta in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-@(conta.Tipo == OrusFinancas.Models.TipoConta.CartaoCredito ? "credit-card" : conta.Tipo == OrusFinancas.Models.TipoConta.CarteiraDigital ? "wallet2" : "bank") me-2"></i>
+                            @conta.NomeBanco.GetDisplayName()
+                        </h5>
+                        <small class="text-light">@conta.Tipo.GetDisplayName()</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted">Saldo Inicial</small>
+                                <p class="mb-1 fw-bold">@conta.SaldoInicial.ToString("C")</p>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Saldo Atual</small>
+                                <p class="mb-1 fw-bold @(conta.SaldoAtual >= 0 ? "text-success" : "text-danger")">
+                                    @conta.SaldoAtual.ToString("C")
+                                </p>
+                            </div>
+                        </div>
+                        
+                        @{
+                            var diferenca = conta.SaldoAtual - conta.SaldoInicial;
+                        }
+                        
+                        <hr />
+                        <small class="text-muted d-block">
+                            Variação: 
+                            <span class="@(diferenca >= 0 ? "text-success" : "text-danger")">
+                                @(diferenca >= 0 ? "+" : "")@diferenca.ToString("C")
+                            </span>
+                        </small>
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group w-100" role="group">
+                            <a asp-action="Edit" asp-route-id="@conta.Id" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                            <a asp-controller="Transacao" asp-action="Create" asp-route-contaId="@conta.Id" class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-plus"></i> Transação
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@conta.Id" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i> Excluir
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Resumo Geral -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">?? Resumo das Contas</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h4 class="text-primary">@Model.Count()</h4>
+                        <small class="text-muted">Total de Contas</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h4 class="text-info">@Model.Sum(c => c.SaldoInicial).ToString("C")</h4>
+                        <small class="text-muted">Saldo Inicial Total</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h4 class="@(Model.Sum(c => c.SaldoAtual) >= 0 ? "text-success" : "text-danger")">
+                            @Model.Sum(c => c.SaldoAtual).ToString("C")
+                        </h4>
+                        <small class="text-muted">Saldo Atual Total</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        @{
+                            var variacao = Model.Sum(c => c.SaldoAtual) - Model.Sum(c => c.SaldoInicial);
+                        }
+                        <h4 class="@(variacao >= 0 ? "text-success" : "text-danger")">
+                            @(variacao >= 0 ? "+" : "")@variacao.ToString("C")
+                        </h4>
+                        <small class="text-muted">Variação Total</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-wallet2 display-1 text-muted"></i>
+            <h4 class="mt-3">Nenhuma conta cadastrada</h4>
+            <p class="text-muted">
+                Comece adicionando suas contas bancárias, cartões de crédito ou carteiras digitais para ter controle completo das suas finanças.
+            </p>
+            <a asp-action="Create" class="btn btn-success btn-lg">
+                <i class="bi bi-plus-circle"></i> Adicionar Primeira Conta
+            </a>
+        </div>
+    </div>
+}
+
+<!-- Dicas -->
+<div class="alert alert-info mt-4">
+    <h6><i class="bi bi-lightbulb"></i> Dicas para gerenciar suas contas:</h6>
+    <ul class="mb-0">
+        <li>Mantenha sempre o saldo inicial atualizado ao cadastrar uma nova conta</li>
+        <li>O saldo atual é calculado automaticamente baseado nas suas transações</li>
+        <li>Use diferentes tipos de conta para organizar melhor suas finanças</li>
+        <li>Adicione transações regularmente para manter o controle atualizado</li>
+    </ul>
+</div>
+
+<div class="mt-4">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-house"></i> Voltar ao Dashboard
+    </a>
+</div>

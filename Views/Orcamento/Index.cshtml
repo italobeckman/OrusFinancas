@@ -1,0 +1,189 @@
+@model List<OrusFinancas.Services.StatusOrcamento>
+
+@{
+    ViewData["Title"] = "Orçamentos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Meus Orçamentos</h1>
+    <div>
+        <form asp-action="CriarOrcamentosPadrao" method="post" class="d-inline me-2">
+            <button type="submit" class="btn btn-outline-secondary">
+                <i class="bi bi-magic"></i> Criar Padrões
+            </button>
+        </form>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Novo Orçamento
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (ViewBag.Alertas != null && ((List<OrusFinancas.Services.AlertaOrcamento>)ViewBag.Alertas).Any())
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <h6><i class="bi bi-exclamation-triangle"></i> Alertas de Orçamento</h6>
+        <ul class="mb-0">
+            @foreach (var alerta in (List<OrusFinancas.Services.AlertaOrcamento>)ViewBag.Alertas)
+            {
+                <li>@alerta.Mensagem</li>
+            }
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    var totalLimite = Model.Sum(o => o.Orcamento.ValorLimite);
+    var totalGasto = Model.Sum(o => o.GastoAtual);
+    var orcamentosNoLimite = Model.Count(o => o.PercentualUtilizado >= 80);
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total de Orçamentos</h5>
+                    <h3>@Model.Count()</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Limite Total</h5>
+                    <h3>@totalLimite.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-warning text-dark">
+                <div class="card-body">
+                    <h5 class="card-title">Gasto Total</h5>
+                    <h3>@totalGasto.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Alertas</h5>
+                    <h3>@orcamentosNoLimite</h3>
+                    <small>Acima de 80%</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                @foreach (var status in Model)
+                {
+                    var porcentagem = status.PercentualUtilizado;
+                    var progressBarClass = porcentagem < 50 ? "bg-success" : 
+                                         porcentagem < 80 ? "bg-warning" : "bg-danger";
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 @(porcentagem >= 100 ? "border-danger" : porcentagem >= 80 ? "border-warning" : "")">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">@status.Orcamento.Nome</h6>
+                                <div class="btn-group" role="group">
+                                    <a asp-action="Edit" asp-route-id="@status.Orcamento.Id" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@status.Orcamento.Id" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <small class="text-muted">Limite</small>
+                                        <div class="fw-bold">@status.Orcamento.ValorLimite.ToString("C")</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Gasto</small>
+                                        <div class="fw-bold text-danger">@status.GastoAtual.ToString("C")</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <small>Progresso</small>
+                                        <small>@porcentagem.ToString("F1")%</small>
+                                    </div>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar @progressBarClass" 
+                                             role="progressbar" 
+                                             style="width: @Math.Min(porcentagem, 100)%" 
+                                             aria-valuenow="@porcentagem" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-12">
+                                        <small class="text-muted">Restante</small>
+                                        <div class="fw-bold @(status.ValorRestante >= 0 ? "text-success" : "text-danger")">
+                                            @status.ValorRestante.ToString("C")
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                @if (porcentagem >= 100)
+                                {
+                                    <div class="alert alert-danger mt-3 mb-0" role="alert">
+                                        <i class="bi bi-exclamation-triangle"></i> 
+                                        <strong>Limite ultrapassado!</strong>
+                                    </div>
+                                }
+                                else if (porcentagem >= 80)
+                                {
+                                    <div class="alert alert-warning mt-3 mb-0" role="alert">
+                                        <i class="bi bi-exclamation-triangle"></i> 
+                                        <strong>Atenção!</strong> 80% do limite atingido.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-graph-up display-1 text-muted"></i>
+            <h4 class="mt-3">Nenhum orçamento cadastrado</h4>
+            <p class="text-muted">
+                Crie orçamentos mensais para controlar melhor seus gastos por categoria.
+                <br>
+                Você pode começar com orçamentos padrão ou criar os seus próprios.
+            </p>
+            <div class="mt-4">
+                <form asp-action="CriarOrcamentosPadrao" method="post" class="d-inline me-2">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-magic"></i> Criar Orçamentos Padrão
+                    </button>
+                </form>
+                <a asp-action="Create" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Criar Orçamento Personalizado
+                </a>
+            </div>
+        </div>
+    </div>
+}

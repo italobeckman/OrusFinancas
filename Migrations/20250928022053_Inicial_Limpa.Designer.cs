@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrusFinancas.Models;
 
@@ -11,9 +12,11 @@ using OrusFinancas.Models;
 namespace OrusFinancas.Migrations
 {
     [DbContext(typeof(Contexto))]
-    partial class ContextoModelSnapshot : ModelSnapshot
+    [Migration("20250928022053_Inicial_Limpa")]
+    partial class Inicial_Limpa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,9 +78,6 @@ namespace OrusFinancas.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("TipoCategoria")
-                        .HasColumnType("int");
 
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
@@ -205,7 +205,7 @@ namespace OrusFinancas.Migrations
                     b.Property<int?>("AssinaturaId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CategoriaId")
+                    b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
                     b.Property<int>("ContaId")
@@ -284,9 +284,6 @@ namespace OrusFinancas.Migrations
             modelBuilder.Entity("OrusFinancas.Models.Receita", b =>
                 {
                     b.HasBaseType("OrusFinancas.Models.Transacao");
-
-                    b.Property<int>("TipoReceita")
-                        .HasColumnType("int");
 
                     b.ToTable("Transacao");
 
@@ -373,13 +370,13 @@ namespace OrusFinancas.Migrations
                 {
                     b.HasOne("OrusFinancas.Models.Assinatura", "Assinatura")
                         .WithMany("TransacoesGeradas")
-                        .HasForeignKey("AssinaturaId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("AssinaturaId");
 
                     b.HasOne("OrusFinancas.Models.Categoria", "Categoria")
                         .WithMany("Transacoes")
                         .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("OrusFinancas.Models.Conta", "Conta")
                         .WithMany("Transacoes")

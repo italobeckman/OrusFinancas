@@ -1,0 +1,95 @@
+@model OrusFinancas.Models.InsightFinanceiro
+
+@{
+    ViewData["Title"] = "Detalhes do Insight";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">?? @Model.Titulo</h2>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h5 class="card-title mb-3">@Model.Titulo</h5>
+                <p class="card-text fs-5">@Model.Detalhe</p>
+            </div>
+            <div class="col-md-4">
+                <div class="text-end">
+                    <div class="mb-3">
+                        @if (Model.DataGeracao.Date == DateTime.Today)
+                        {
+                            <span class="badge bg-success fs-6">Insight de Hoje</span>
+                        }
+                        else if (Model.DataGeracao.Date >= DateTime.Today.AddDays(-7))
+                        {
+                            <span class="badge bg-info fs-6">Esta Semana</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary fs-6">Insight Anterior</span>
+                        }
+                    </div>
+                    <p class="text-muted">
+                        <i class="bi bi-calendar"></i> Gerado em<br>
+                        <strong>@Model.DataGeracao.ToString("dd/MM/yyyy")</strong><br>
+                        às @Model.DataGeracao.ToString("HH:mm")
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.DataGeracao.Date == DateTime.Today)
+{
+    <div class="alert alert-info mt-4">
+        <h6><i class="bi bi-info-circle"></i> Dica sobre este insight</h6>
+        <p class="mb-0">
+            Este é o insight gerado especificamente para hoje com base na análise dos seus dados financeiros mais recentes.
+            Use essas informações para tomar decisões mais conscientes sobre seus gastos e investimentos.
+        </p>
+    </div>
+}
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h6 class="mb-0">Ações Recomendadas</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <a asp-controller="Transacao" asp-action="Index" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-list"></i> Ver Transações
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a asp-controller="Orcamento" asp-action="Index" class="btn btn-outline-warning btn-sm">
+                            <i class="bi bi-pie-chart"></i> Verificar Orçamentos
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <a asp-controller="Relatorio" asp-action="GraficoGastosPorCategoria" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-graph-up"></i> Ver Relatórios
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a asp-controller="Assinatura" asp-action="Index" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-arrow-repeat"></i> Gerenciar Assinaturas
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

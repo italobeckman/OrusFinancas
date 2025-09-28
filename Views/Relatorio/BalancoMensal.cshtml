@@ -1,0 +1,193 @@
+@model dynamic
+
+@{
+    ViewData["Title"] = "Balanço Mensal";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">?? Balanço Mensal - @Model.MesNome</h2>
+</div>
+
+<!-- Seletor de Período -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="mes" class="form-label">Mês</label>
+                <select name="mes" id="mes" class="form-select">
+                    @for (int i = 1; i <= 12; i++)
+                    {
+                        <option value="@i" selected="@(Model.Mes == i)">
+                            @DateTime.Now.AddMonths(i - DateTime.Now.Month).ToString("MMMM")
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="ano" class="form-label">Ano</label>
+                <select name="ano" id="ano" class="form-select">
+                    @for (int ano = DateTime.Now.Year; ano >= DateTime.Now.Year - 5; ano--)
+                    {
+                        <option value="@ano" selected="@(Model.Ano == ano)">@ano</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary d-block w-100">Atualizar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Resumo Geral -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Receitas</h5>
+                <h2 class="card-text">@Model.TotalReceitas.ToString("C")</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <h5 class="card-title">Despesas</h5>
+                <h2 class="card-text">@Model.TotalDespesas.ToString("C")</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white @(Model.Saldo >= 0 ? "bg-info" : "bg-warning")">
+            <div class="card-body">
+                <h5 class="card-title">Saldo</h5>
+                <h2 class="card-text">@Model.Saldo.ToString("C")</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detalhamento por Categoria -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Receitas por Categoria</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.ReceitasPorCategoria != null && Model.ReceitasPorCategoria.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <tbody>
+                                @foreach (var item in Model.ReceitasPorCategoria)
+                                {
+                                    <tr>
+                                        <td>@item.Categoria</td>
+                                        <td class="text-end">@((decimal)item.Total).ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center">Nenhuma receita no período</p>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Despesas por Categoria</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.DespesasPorCategoria != null && Model.DespesasPorCategoria.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <tbody>
+                                @foreach (var item in Model.DespesasPorCategoria)
+                                {
+                                    <tr>
+                                        <td>@item.Categoria</td>
+                                        <td class="text-end">@((decimal)item.Total).ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center">Nenhuma despesa no período</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráfico de Comparação -->
+@if ((Model.ReceitasPorCategoria != null && Model.ReceitasPorCategoria.Count > 0) || 
+     (Model.DespesasPorCategoria != null && Model.DespesasPorCategoria.Count > 0))
+{
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">Gráfico Comparativo</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="graficoBalanco" width="400" height="200"></canvas>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @if ((Model.ReceitasPorCategoria != null && Model.ReceitasPorCategoria.Count > 0) || 
+         (Model.DespesasPorCategoria != null && Model.DespesasPorCategoria.Count > 0))
+    {
+        <script>
+            const ctx = document.getElementById('graficoBalanco').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Receitas', 'Despesas'],
+                    datasets: [{
+                        label: 'Valores',
+                        data: [@Model.TotalReceitas, @Model.TotalDespesas],
+                        backgroundColor: ['#28a745', '#dc3545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value.toLocaleString('pt-BR');
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'R$ ' + context.parsed.y.toLocaleString('pt-BR');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    }
+}

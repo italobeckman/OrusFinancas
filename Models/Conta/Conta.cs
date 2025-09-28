@@ -26,12 +26,14 @@ namespace OrusFinancas.Models
         public decimal SaldoAtual { get; set; } 
 
         // Relacionamento com Usuário (1:N)
+        public int UsuarioId { get; set; }
         [Required] // Toda Conta deve ter um Usuário
         public Usuario Usuario { get; set; } = default!; // Mudança: Deve ser não-nullable se a FK for obrigatória
 
         // Propriedades de Navegação
         public ICollection<Transacao> Transacoes { get; set; } = new List<Transacao>();
         public ICollection<Assinatura> Assinaturas { get; set; } = new List<Assinatura>();
+
     }
 
     // Enum para o Requisito: Tipos de Conta
@@ -61,6 +63,12 @@ namespace OrusFinancas.Models
         
         [Display(Name = "Caixa Econômica Federal")]
         CaixaEconomica = 4,
+        
+        [Display(Name = "Santander")]
+        Santander = 5,
+        
+        [Display(Name = "Banco Safra")]
+        Safra = 6,
 
         // Bancos Digitais / Fintechs
         [Display(Name = "Nubank")]
@@ -72,8 +80,32 @@ namespace OrusFinancas.Models
         [Display(Name = "C6 Bank")]
         C6Bank = 12,
         
+        [Display(Name = "BTG Pactual")]
+        BTG = 13,
+        
+        [Display(Name = "XP Investimentos")]
+        XP = 14,
+        
+        [Display(Name = "Banco Original")]
+        Original = 15,
+
         // Carteiras Digitais e Outros
         [Display(Name = "PicPay")]
         PicPay = 20,
+        
+        [Display(Name = "PayPal")]
+        PayPal = 21,
+        
+        [Display(Name = "Mercado Pago")]
+        MercadoPago = 22,
+        
+        [Display(Name = "Carteira Física")]
+        CarteiraFisica = 30,
+
+        [Display(Name = "Conta Padrão")]
+        ContaPadrao = 98,
+
+        [Display(Name = "Outro")]
+        Outro = 99
     }
 }

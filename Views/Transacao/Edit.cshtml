@@ -1,0 +1,141 @@
+@model OrusFinancas.Models.ViewModels.TransacaoViewModel
+
+@{
+    ViewData["Title"] = "Editar Transação";
+}
+
+<h1>Editar Transação</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit" method="post" id="editTransacaoForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            
+            <input type="hidden" asp-for="Id" />
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="TipoTransacao" class="form-label">Tipo *</label>
+                    <select asp-for="TipoTransacao" class="form-select" asp-items="Html.GetEnumSelectList<OrusFinancas.Models.ViewModels.TipoTransacao>()" disabled>
+                    </select>
+                    <input type="hidden" asp-for="TipoTransacao" />
+                    <small class="form-text text-muted">O tipo da transação não pode ser alterado</small>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label asp-for="DataTransacao" class="form-label">Data *</label>
+                    <input asp-for="DataTransacao" class="form-control" type="date" />
+                    <span asp-validation-for="DataTransacao" class="text-danger"></span>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="Descricao" class="form-label">Descrição *</label>
+                <input asp-for="Descricao" class="form-control" />
+                <span asp-validation-for="Descricao" class="text-danger"></span>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Valor" class="form-label">Valor *</label>
+                    <div class="input-group">
+                        <span class="input-group-text">R$</span>
+                        <input asp-for="Valor" class="form-control" step="0.01" />
+                    </div>
+                    <span asp-validation-for="Valor" class="text-danger"></span>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ContaId" class="form-label">Conta *</label>
+                    <select asp-for="ContaId" class="form-select">
+                        @foreach (var conta in Model.Contas)
+                        {
+                            <option value="@conta.Id" selected="@(conta.Id == Model.ContaId)">@conta.NomeBanco - @conta.Tipo</option>
+                        }
+                    </select>
+                    <span asp-validation-for="ContaId" class="text-danger"></span>
+                </div>
+            </div>
+            
+            <!-- Campos específicos para receita -->
+            @if (Model.TipoTransacao == OrusFinancas.Models.ViewModels.TipoTransacao.Receita)
+            {
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="TipoReceita" class="form-label">Tipo de Receita *</label>
+                        <select asp-for="TipoReceita" class="form-select" asp-items="Html.GetEnumSelectList<OrusFinancas.Models.TipoReceita>()">
+                            <option value="">Selecione o tipo de receita</option>
+                        </select>
+                        <span asp-validation-for="TipoReceita" class="text-danger"></span>
+                    </div>
+                </div>
+            }
+            
+            <!-- Campos específicos para despesa -->
+            @if (Model.TipoTransacao == OrusFinancas.Models.ViewModels.TipoTransacao.Despesa)
+            {
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="CategoriaId" class="form-label">Categoria *</label>
+                        <select asp-for="CategoriaId" class="form-select">
+                            <option value="">Selecione uma categoria</option>
+                            @foreach (var categoria in Model.Categorias)
+                            {
+                                <option value="@categoria.Id" selected="@(categoria.Id == Model.CategoriaId)">@categoria.Nome</option>
+                            }
+                        </select>
+                        <span asp-validation-for="CategoriaId" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="AssinaturaId" class="form-label">Assinatura (Opcional)</label>
+                        <select asp-for="AssinaturaId" class="form-select">
+                            <option value="">Nenhuma assinatura</option>
+                            @foreach (var assinatura in Model.Assinaturas)
+                            {
+                                <option value="@assinatura.Id" selected="@(assinatura.Id == Model.AssinaturaId)">@assinatura.Servico - @assinatura.ValorMensal.ToString("C")</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            }
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-save"></i> Salvar Alterações
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6 class="card-title">?? Dicas</h6>
+                @if (Model.TipoTransacao == OrusFinancas.Models.ViewModels.TipoTransacao.Receita)
+                {
+                    <ul class="list-unstyled small">
+                        <li>?? <strong>Receitas:</strong> Não precisam de categoria</li>
+                        <li>?? Use o tipo certo: Salário, Freelance, Investimentos, etc.</li>
+                        <li>?? Seja específico na descrição</li>
+                    </ul>
+                }
+                else
+                {
+                    <ul class="list-unstyled small">
+                        <li>?? <strong>Despesas:</strong> Categoria é obrigatória</li>
+                        <li>?? Associe a assinaturas recorrentes quando aplicável</li>
+                        <li>?? Use categorias para organizar melhor</li>
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

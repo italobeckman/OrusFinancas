@@ -1,0 +1,115 @@
+@{
+    ViewData["Title"] = "Bem-vindo ao Órus Finanças";
+}
+
+<div class="jumbotron bg-success text-white rounded p-5 mb-5">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold">
+            <i class="bi bi-cash-coin me-3"></i>Órus Finanças
+        </h1>
+        <p class="lead fs-4 mt-4">
+            Controle suas finanças pessoais de forma simples e eficiente
+        </p>
+        <hr class="my-4 border-white">
+        <p class="fs-5">
+            Gerencie contas, transações, orçamentos e assinaturas em um só lugar.
+        </p>
+        <div class="mt-4">
+            <a class="btn btn-light btn-lg me-3" asp-controller="Usuario" asp-action="Create" role="button">
+                <i class="bi bi-person-plus"></i> Cadastre-se Grátis
+            </a>
+            <a class="btn btn-outline-light btn-lg" asp-controller="Usuario" asp-action="Login" role="button">
+                <i class="bi bi-box-arrow-in-right"></i> Fazer Login
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row text-center">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-0 shadow">
+                <div class="card-body">
+                    <i class="bi bi-wallet2 display-4 text-success mb-3"></i>
+                    <h4 class="card-title">Controle de Contas</h4>
+                    <p class="card-text">
+                        Gerencie suas contas correntes, cartões de crédito e carteiras digitais em um só lugar.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-0 shadow">
+                <div class="card-body">
+                    <i class="bi bi-graph-up display-4 text-primary mb-3"></i>
+                    <h4 class="card-title">Orçamentos Inteligentes</h4>
+                    <p class="card-text">
+                        Defina metas de gastos por categoria e receba alertas quando atingir os limites.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-0 shadow">
+                <div class="card-body">
+                    <i class="bi bi-arrow-repeat display-4 text-warning mb-3"></i>
+                    <h4 class="card-title">Assinaturas Automáticas</h4>
+                    <p class="card-text">
+                        Gerencie suas assinaturas recorrentes e nunca mais se esqueça de um pagamento.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row text-center mt-5">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card bg-light border-0">
+                <div class="card-body">
+                    <i class="bi bi-receipt display-5 text-info"></i>
+                    <h6 class="mt-2">Transações</h6>
+                    <small class="text-muted">Registre receitas e despesas</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card bg-light border-0">
+                <div class="card-body">
+                    <i class="bi bi-tags display-5 text-secondary"></i>
+                    <h6 class="mt-2">Categorização</h6>
+                    <small class="text-muted">Organize por categorias</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card bg-light border-0">
+                <div class="card-body">
+                    <i class="bi bi-bell display-5 text-danger"></i>
+                    <h6 class="mt-2">Alertas</h6>
+                    <small class="text-muted">Notificações inteligentes</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card bg-light border-0">
+                <div class="card-body">
+                    <i class="bi bi-lightbulb display-5 text-warning"></i>
+                    <h6 class="mt-2">Insights</h6>
+                    <small class="text-muted">Dicas personalizadas</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-5 mb-5">
+        <h3 class="mb-4">Pronto para começar?</h3>
+        <a class="btn btn-success btn-lg" asp-controller="Usuario" asp-action="Create">
+            <i class="bi bi-person-plus"></i> Criar Conta Gratuita
+        </a>
+    </div>
+</div>

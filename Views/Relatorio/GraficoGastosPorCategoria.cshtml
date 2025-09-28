@@ -1,0 +1,141 @@
+@model List<OrusFinancas.Models.ViewModels.GastosPorCategoriaViewModel>
+
+@{
+    ViewData["Title"] = "Gastos por Categoria";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">?? Gastos por Categoria - @ViewBag.MesNome</h2>
+</div>
+
+<!-- Seletor de Período -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="mes" class="form-label">Mês</label>
+                <select name="mes" id="mes" class="form-select">
+                    @for (int i = 1; i <= 12; i++)
+                    {
+                        <option value="@i" selected="@(ViewBag.Mes == i)">
+                            @DateTime.Now.AddMonths(i - DateTime.Now.Month).ToString("MMMM")
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="ano" class="form-label">Ano</label>
+                <select name="ano" id="ano" class="form-select">
+                    @for (int ano = DateTime.Now.Year; ano >= DateTime.Now.Year - 5; ano--)
+                    {
+                        <option value="@ano" selected="@(ViewBag.Ano == ano)">@ano</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary d-block w-100">Atualizar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <!-- Gráfico -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <canvas id="graficoGastos" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Categoria</th>
+                            <th class="text-end">Total Gasto</th>
+                            <th class="text-end">Percentual</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            decimal totalGeral = Model.Sum(x => x.Total);
+                        }
+                        @foreach (var item in Model)
+                        {
+                            var percentual = totalGeral > 0 ? (item.Total / totalGeral) * 100 : 0;
+                            <tr>
+                                <td>@item.Categoria</td>
+                                <td class="text-end">@item.Total.ToString("C")</td>
+                                <td class="text-end">@percentual.ToString("F1")%</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-secondary">
+                            <th>Total</th>
+                            <th class="text-end">@totalGeral.ToString("C")</th>
+                            <th class="text-end">100%</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <p class="text-muted">Nenhuma despesa encontrada para o período selecionado.</p>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @if (Model != null && Model.Any())
+    {
+        <script>
+            const ctx = document.getElementById('graficoGastos').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: [@Html.Raw(string.Join(",", Model.Select(x => $"'{x.Categoria}'")))],
+                    datasets: [{
+                        data: [@Html.Raw(string.Join(",", Model.Select(x => x.Total)))],
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0',
+                            '#9966FF',
+                            '#FF9F40',
+                            '#FF6384',
+                            '#C9CBCF'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': R$ ' + context.parsed.toLocaleString('pt-BR');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    }
+}

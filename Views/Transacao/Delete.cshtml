@@ -1,0 +1,53 @@
+@model OrusFinancas.Models.Transacao
+
+@{
+    ViewData["Title"] = "Excluir Transação";
+}
+
+<h1>Excluir Transação</h1>
+
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i>
+    Tem certeza de que deseja excluir esta transação? Esta ação não pode ser desfeita.
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Descricao</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Data:</strong> @Model.DataTransacao.ToString("dd/MM/yyyy")</p>
+                <p><strong>Valor:</strong> <span class="@(Model is OrusFinancas.Models.Receita ? "text-success" : "text-danger")">@Model.Valor.ToString("C")</span></p>
+                <p><strong>Tipo:</strong> 
+                    @if (Model is OrusFinancas.Models.Receita)
+                    {
+                        <span class="badge bg-success">Receita</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Despesa</span>
+                    }
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Categoria:</strong> @(Model.Categoria?.Nome ?? "N/A")</p>
+                <p><strong>Conta:</strong> @(Model.Conta?.NomeBanco.ToString() ?? "N/A")</p>
+                @if (Model.Assinatura != null)
+                {
+                    <p><strong>Assinatura:</strong> @Model.Assinatura.Servico</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <form asp-action="Delete" method="post" class="d-inline">
+        <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash"></i> Confirmar Exclusão
+        </button>
+    </form>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Cancelar
+    </a>
+</div>

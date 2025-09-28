@@ -20,10 +20,11 @@ namespace OrusFinancas.Models
         public int ContaId { get; set; }
         public Conta Conta { get; set; } = new Conta();
 
-        // Relacionamento com Categoria (N:1)
-        public int CategoriaId { get; set; }
+        // Relacionamento com Categoria (N:1) - Opcional para receitas
+        public int? CategoriaId { get; set; }
         public Categoria? Categoria { get; set; }
 
+        // Relacionamento com Assinatura (apenas para despesas)
         public int? AssinaturaId { get; set; } 
         public Assinatura? Assinatura { get; set; }
     }
