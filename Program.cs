@@ -13,11 +13,29 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
+// Conexão limpa (sem Collation na string)
+var connectionString = 
+    "Server=localhost,1433;Database=NomeDoBanco;User Id=sa;Password=SUA_SENHA_FORTE;TrustServerCertificate=True;";
+
+
 // SQLServer
 builder.Services.AddDbContext<Contexto>(options =>
+{
+    // A Collation será definida em Contexto.cs (OnModelCreating)
     options.UseSqlServer(
-        "Server=(localdb)\\mssqllocaldb;Database=NomeDoBanco;Trusted_Connection=True;")
-);
+        connectionString,
+        sqlOptions =>
+        {
+            // Mantemos a resiliência contra erros transitórios do Docker.
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5, 
+                maxRetryDelay: TimeSpan.FromSeconds(30), 
+                errorNumbersToAdd: null
+            );
+        }
+    );
+});
+
 
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>

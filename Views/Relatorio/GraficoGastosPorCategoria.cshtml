@@ -8,12 +8,11 @@
     <h2 class="mb-0">?? Gastos por Categoria - @ViewBag.MesNome</h2>
 </div>
 
-<!-- Seletor de Período -->
 <div class="card mb-4">
     <div class="card-body">
         <form method="get" class="row g-3">
             <div class="col-md-3">
-                <label for="mes" class="form-label">Mês</label>
+                <label for="mes" class="form-label">MÃªs</label>
                 <select name="mes" id="mes" class="form-select">
                     @for (int i = 1; i <= 12; i++)
                     {
@@ -42,14 +41,16 @@
 
 @if (Model != null && Model.Any())
 {
-    <!-- Gráfico -->
     <div class="card mb-4">
         <div class="card-body">
-            <canvas id="graficoGastos" width="400" height="200"></canvas>
-        </div>
+            <div class="d-flex justify-content-center">
+                <div style="max-width: 300px; width: 100%;">
+                    <canvas id="graficoGastos"></canvas>
+                </div>
+            </div>
+            </div>
     </div>
 
-    <!-- Tabela -->
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
@@ -91,7 +92,7 @@ else
 {
     <div class="card">
         <div class="card-body text-center py-5">
-            <p class="text-muted">Nenhuma despesa encontrada para o período selecionado.</p>
+            <p class="text-muted">Nenhuma despesa encontrada para o perÃ­odo selecionado.</p>
         </div>
     </div>
 }

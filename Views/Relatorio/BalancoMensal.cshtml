@@ -1,19 +1,18 @@
 @model dynamic
 
 @{
-    ViewData["Title"] = "Balanço Mensal";
+    ViewData["Title"] = "BalanÃ§o Mensal";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">?? Balanço Mensal - @Model.MesNome</h2>
+    <h2 class="mb-0">?? BalanÃ§o Mensal - @Model.MesNome</h2>
 </div>
 
-<!-- Seletor de Período -->
 <div class="card mb-4">
     <div class="card-body">
         <form method="get" class="row g-3">
             <div class="col-md-3">
-                <label for="mes" class="form-label">Mês</label>
+                <label for="mes" class="form-label">MÃªs</label>
                 <select name="mes" id="mes" class="form-select">
                     @for (int i = 1; i <= 12; i++)
                     {
@@ -40,7 +39,6 @@
     </div>
 </div>
 
-<!-- Resumo Geral -->
 <div class="row mb-4">
     <div class="col-md-4">
         <div class="card text-white bg-success">
@@ -68,7 +66,6 @@
     </div>
 </div>
 
-<!-- Detalhamento por Categoria -->
 <div class="row">
     <div class="col-md-6">
         <div class="card">
@@ -94,7 +91,7 @@
                 }
                 else
                 {
-                    <p class="text-muted text-center">Nenhuma receita no período</p>
+                    <p class="text-muted text-center">Nenhuma receita no perÃ­odo</p>
                 }
             </div>
         </div>
@@ -124,24 +121,27 @@
                 }
                 else
                 {
-                    <p class="text-muted text-center">Nenhuma despesa no período</p>
+                    <p class="text-muted text-center">Nenhuma despesa no perÃ­odo</p>
                 }
             </div>
         </div>
     </div>
 </div>
 
-<!-- Gráfico de Comparação -->
 @if ((Model.ReceitasPorCategoria != null && Model.ReceitasPorCategoria.Count > 0) || 
      (Model.DespesasPorCategoria != null && Model.DespesasPorCategoria.Count > 0))
 {
     <div class="card mt-4">
         <div class="card-header">
-            <h5 class="mb-0">Gráfico Comparativo</h5>
+            <h5 class="mb-0">GrÃ¡fico Comparativo</h5>
         </div>
         <div class="card-body">
-            <canvas id="graficoBalanco" width="400" height="200"></canvas>
-        </div>
+            <div class="d-flex justify-content-center">
+                <div style="max-width: 500px; width: 100%;">
+                    <canvas id="graficoBalanco"></canvas> 
+                </div>
+            </div>
+            </div>
     </div>
 }
 
