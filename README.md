@@ -100,7 +100,7 @@ Sistema completo para gestão financeira pessoal desenvolvido em ASP.NET Core 8 
 5.  **Acesse no navegador**
 
     ```
-    https://localhost:****
+    https://localhost:5277
     ```
 
 -----
