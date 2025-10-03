@@ -1,6 +1,6 @@
 # 💰 Orus Finanças - Sistema de Controle Financeiro Pessoal
 
-Sistema completo para gestão financeira pessoal desenvolvido em ASP.NET Core 8 com Entity Framework Core.
+Sistema completo para gestão financeira pessoal desenvolvido em ASP.NET Core 8 com Entity Framework Core para a matéria de Tópicos 3.
 
 -----
 
@@ -33,7 +33,6 @@ Sistema completo para gestão financeira pessoal desenvolvido em ASP.NET Core 8 
 ### 🔄 Gestão de Assinaturas (Recorrências)
 
   - [x] Cadastro de serviços recorrentes
-  - [x] Geração automática de despesas no vencimento
   - [x] Controle de assinaturas ativas/inativas
   - [x] Cálculo de próximos vencimentos
 
@@ -41,8 +40,6 @@ Sistema completo para gestão financeira pessoal desenvolvido em ASP.NET Core 8 
 
   - [x] Criação de orçamentos mensais por categoria
   - [x] Monitoramento de gastos vs orçamento
-  - [x] Alertas automáticos quando atingir 80% do limite
-  - [x] Alertas quando exceder 100% do limite
   - [x] Status visual dos orçamentos
 
 ### 🖥️ Dashboard Completo
@@ -52,12 +49,20 @@ Sistema completo para gestão financeira pessoal desenvolvido em ASP.NET Core 8 
   - [x] Status dos orçamentos com barras de progresso
   - [x] Próximas assinaturas a vencer
 
-### 📈 Relatórios Avançados
+### 📈 Relatórios
 
   - [x] Extrato financeiro com filtros
   - [x] Gráfico de gastos por categoria (Chart.js)
-  - [x] Balanço mensal detalhado
-  - [x] Relatório completo de assinaturas
+  - [x] Balanço mensal
+  - [x] Relatório de assinaturas
+
+-----
+
+## 🧭 Modelagem
+
+Visão geral das entidades principais e seus relacionamentos dentro do sistema.
+
+![Diagrama de modelagem do domínio](docs/uml/modelagem.png)
 
 -----
 
@@ -190,7 +195,7 @@ Sistema completo para gestão financeira pessoal desenvolvido em ASP.NET Core 8 
 ## ⚠️ Problemas
 
   - Se encontrar problemas com migrações, delete o banco e execute `dotnet ef database update` novamente
-  - Certifique-se de que o SQL Server LocalDB está instalado e funcionando
+  - Certifique-se de que o SQL Server está instalado e funcionando
 
 -----
 
