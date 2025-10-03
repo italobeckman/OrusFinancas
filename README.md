@@ -2,6 +2,11 @@
 
 Sistema completo para gestão financeira pessoal desenvolvido em ASP.NET Core 8 com Entity Framework Core para a matéria de Tópicos 3.
 
+## 👥 Colaboradores
+
+- [@ItaloBeckman](https://github.com/italobeckman)
+- [@DaniloBelem](https://github.com/DaniloBelem09-0-0) 
+
 -----
 
 ## ✨ Funcionalidades Implementadas
