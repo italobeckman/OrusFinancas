@@ -1,0 +1,123 @@
+@model OrusFinancas.Models.Tag
+
+@{
+    ViewData["Title"] = "Nova Tag";
+}
+
+<div class="mb-4">
+    <h1 class="display-6 fw-bold text-primary">
+        <i class="bi bi-tag-fill me-2"></i>Nova Tag
+    </h1>
+    <p class="text-muted">Crie uma etiqueta personalizada para organizar suas transações</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="form-group mb-3">
+                        <label asp-for="Nome" class="form-label fw-bold">
+                            <i class="bi bi-fonts text-primary"></i> Nome da Tag
+                        </label>
+                        <input asp-for="Nome" 
+                               class="form-control form-control-lg" 
+                               placeholder="Ex: Urgente, Parcelado, Investimento..." 
+                               maxlength="30" />
+                        <span asp-validation-for="Nome" class="text-danger small"></span>
+                        <small class="form-text text-muted">Máximo de 30 caracteres</small>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label asp-for="Cor" class="form-label fw-bold">
+                            <i class="bi bi-palette text-primary"></i> Cor (Opcional)
+                        </label>
+                        <div class="input-group">
+                            <input asp-for="Cor" 
+                                   type="color" 
+                                   class="form-control form-control-color" 
+                                   value="#6c757d"
+                                   title="Escolha uma cor" />
+                            <input asp-for="Cor" 
+                                   type="text" 
+                                   class="form-control" 
+                                   placeholder="#RRGGBB"
+                                   maxlength="7" />
+                        </div>
+                        <span asp-validation-for="Cor" class="text-danger small"></span>
+                        <small class="form-text text-muted">Formato hexadecimal (Ex: #FF5733)</small>
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label asp-for="Descricao" class="form-label fw-bold">
+                            <i class="bi bi-card-text text-primary"></i> Descrição (Opcional)
+                        </label>
+                        <textarea asp-for="Descricao" 
+                                  class="form-control" 
+                                  rows="3" 
+                                  placeholder="Adicione uma descrição para esta tag..."
+                                  maxlength="100"></textarea>
+                        <span asp-validation-for="Descricao" class="text-danger small"></span>
+                        <small class="form-text text-muted">Máximo de 100 caracteres</small>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-save"></i> Salvar Tag
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-lightbulb"></i> Dicas
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li class="mb-2">Use nomes curtos e descritivos</li>
+                    <li class="mb-2">Escolha cores que façam sentido para você</li>
+                    <li class="mb-2">Exemplos de tags úteis:
+                        <ul class="mt-1">
+                            <li>Urgente</li>
+                            <li>Parcelado</li>
+                            <li>Recorrente</li>
+                            <li>Planejado</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Sincronizar o input de cor com o input de texto
+        document.addEventListener('DOMContentLoaded', function() {
+            const colorPicker = document.querySelector('input[type="color"]');
+            const textInput = document.querySelectorAll('input[name="Cor"]')[1];
+            
+            if (colorPicker && textInput) {
+                colorPicker.addEventListener('input', function() {
+                    textInput.value = this.value.toUpperCase();
+                });
+                
+                textInput.addEventListener('input', function() {
+                    if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+                        colorPicker.value = this.value;
+                    }
+                });
+            }
+        });
+    </script>
+}

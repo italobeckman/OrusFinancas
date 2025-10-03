@@ -24,6 +24,7 @@
                             <th>Descrição</th>
                             <th>Categoria/Tipo</th>
                             <th>Conta</th>
+                            <th>Tags</th>
                             <th>Tipo</th>
                             <th>Valor</th>
                             <th>Ações</th>
@@ -53,6 +54,24 @@
                                     else
                                     {
                                         <span>N/A</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (transacao.TransacoesTags != null && transacao.TransacoesTags.Any())
+                                    {
+                                        @foreach (var tt in transacao.TransacoesTags)
+                                        {
+                                            var corTag = !string.IsNullOrEmpty(tt.Tag.Cor) ? tt.Tag.Cor : "#6c757d";
+                                            <span class="badge rounded-pill me-1" 
+                                                  style="background-color: @corTag;" 
+                                                  title="@tt.Tag.Descricao">
+                                                @tt.Tag.Nome
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <small class="text-muted">-</small>
                                     }
                                 </td>
                                 <td>

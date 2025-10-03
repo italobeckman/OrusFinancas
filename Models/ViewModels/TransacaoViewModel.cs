@@ -31,10 +31,15 @@ namespace OrusFinancas.Models.ViewModels
         // Para receitas - substitui categoria
         public TipoReceita? TipoReceita { get; set; }
 
+        // Tags selecionadas (Many-to-Many)
+        [Display(Name = "Tags")]
+        public List<int> TagsSelecionadas { get; set; } = new List<int>();
+
         // Propriedades para os dropdowns
         public List<Conta> Contas { get; set; } = new List<Conta>();
         public List<Categoria> Categorias { get; set; } = new List<Categoria>();
         public List<Assinatura> Assinaturas { get; set; } = new List<Assinatura>();
+        public List<Tag> Tags { get; set; } = new List<Tag>();
         
         // Validação customizada
         public bool IsValid()

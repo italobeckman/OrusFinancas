@@ -22,6 +22,10 @@ namespace OrusFinancas.Models
         public DbSet<Receita> Receitas { get; set; }
         public DbSet<Despesa> Despesas { get; set; }
 
+        // DbSets para o relacionamento Many-to-Many
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<TransacaoTag> TransacoesTags { get; set; }
+
         // ADICIONE ESTE MÉTODO PARA CONFIGURAR AS RELAÇÕES
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -82,6 +86,25 @@ namespace OrusFinancas.Models
                 .HasDiscriminator<string>("Discriminator")
                 .HasValue<Receita>("Receita")
                 .HasValue<Despesa>("Despesa");
+
+            // ===== CONFIGURAÇÃO DO RELACIONAMENTO MANY-TO-MANY =====
+            // Configurar a tabela de junção TransacaoTag com chave composta
+            modelBuilder.Entity<TransacaoTag>()
+                .HasKey(tt => new { tt.TransacaoId, tt.TagId });
+
+            // Configurar relacionamento Transacao -> TransacaoTag
+            modelBuilder.Entity<TransacaoTag>()
+                .HasOne(tt => tt.Transacao)
+                .WithMany(t => t.TransacoesTags)
+                .HasForeignKey(tt => tt.TransacaoId)
+                .OnDelete(DeleteBehavior.Cascade); // Quando deletar transação, remove as associações
+
+            // Configurar relacionamento Tag -> TransacaoTag
+            modelBuilder.Entity<TransacaoTag>()
+                .HasOne(tt => tt.Tag)
+                .WithMany(tag => tag.TransacoesTags)
+                .HasForeignKey(tt => tt.TagId)
+                .OnDelete(DeleteBehavior.Cascade); // Quando deletar tag, remove as associações
 
             base.OnModelCreating(modelBuilder);
         }

@@ -1,0 +1,95 @@
+@model OrusFinancas.Models.Tag
+
+@{
+    ViewData["Title"] = "Editar Tag";
+}
+
+<div class="mb-4">
+    <h1 class="display-6 fw-bold text-primary">
+        <i class="bi bi-pencil-square me-2"></i>Editar Tag
+    </h1>
+    <p class="text-muted">Atualize as informações da tag</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="form-group mb-3">
+                        <label asp-for="Nome" class="form-label fw-bold">
+                            <i class="bi bi-fonts text-primary"></i> Nome da Tag
+                        </label>
+                        <input asp-for="Nome" 
+                               class="form-control form-control-lg" 
+                               maxlength="30" />
+                        <span asp-validation-for="Nome" class="text-danger small"></span>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label asp-for="Cor" class="form-label fw-bold">
+                            <i class="bi bi-palette text-primary"></i> Cor
+                        </label>
+                        <div class="input-group">
+                            <input asp-for="Cor" 
+                                   type="color" 
+                                   class="form-control form-control-color" 
+                                   title="Escolha uma cor" />
+                            <input asp-for="Cor" 
+                                   type="text" 
+                                   class="form-control" 
+                                   placeholder="#RRGGBB"
+                                   maxlength="7" />
+                        </div>
+                        <span asp-validation-for="Cor" class="text-danger small"></span>
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label asp-for="Descricao" class="form-label fw-bold">
+                            <i class="bi bi-card-text text-primary"></i> Descrição
+                        </label>
+                        <textarea asp-for="Descricao" 
+                                  class="form-control" 
+                                  rows="3" 
+                                  maxlength="100"></textarea>
+                        <span asp-validation-for="Descricao" class="text-danger small"></span>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save"></i> Salvar Alterações
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const colorPicker = document.querySelector('input[type="color"]');
+            const textInput = document.querySelectorAll('input[name="Cor"]')[1];
+            
+            if (colorPicker && textInput) {
+                colorPicker.addEventListener('input', function() {
+                    textInput.value = this.value.toUpperCase();
+                });
+                
+                textInput.addEventListener('input', function() {
+                    if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+                        colorPicker.value = this.value;
+                    }
+                });
+            }
+        });
+    </script>
+}

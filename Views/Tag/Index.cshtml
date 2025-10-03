@@ -1,0 +1,126 @@
+@model IEnumerable<OrusFinancas.Models.Tag>
+
+@{
+    ViewData["Title"] = "Tags";
+    var transacoesPorTag = ViewBag.TransacoesPorTag as Dictionary<int, int> ?? new Dictionary<int, int>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="display-6 fw-bold text-primary mb-1">
+            <i class="bi bi-tags-fill me-2"></i>Tags
+        </h1>
+        <p class="text-muted mb-0">Organize suas transações com etiquetas personalizadas</p>
+    </div>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Nova Tag
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="row g-3">
+                @foreach (var tag in Model)
+                {
+                    var quantidadeTransacoes = transacoesPorTag.ContainsKey(tag.Id) ? transacoesPorTag[tag.Id] : 0;
+                    var corTag = !string.IsNullOrEmpty(tag.Cor) ? tag.Cor : "#6c757d";
+                    
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm" style="border-left: 4px solid @corTag !important;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge rounded-pill me-2" 
+                                                  style="background-color: @corTag; width: 12px; height: 12px; padding: 0;">
+                                            </span>
+                                            <h5 class="card-title mb-0">@tag.Nome</h5>
+                                        </div>
+                                        
+                                        @if (!string.IsNullOrEmpty(tag.Descricao))
+                                        {
+                                            <small class="text-muted d-block">
+                                                <i class="bi bi-info-circle"></i> @tag.Descricao
+                                            </small>
+                                        }
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-receipt text-primary me-2"></i>
+                                        <span class="text-muted">
+                                            <strong>@quantidadeTransacoes</strong> 
+                                            @(quantidadeTransacoes == 1 ? "transação" : "transações")
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="btn-group w-100" role="group">
+                                    <a asp-action="Edit" asp-route-id="@tag.Id" 
+                                       class="btn btn-outline-primary btn-sm" 
+                                       title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@tag.Id" 
+                                       class="btn btn-outline-info btn-sm"
+                                       title="Detalhes">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@tag.Id" 
+                                       class="btn btn-outline-danger btn-sm"
+                                       title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            <div class="mt-4 pt-3 border-top">
+                <p class="text-muted mb-0">
+                    <i class="bi bi-collection"></i> 
+                    <strong>@Model.Count()</strong> tags cadastradas
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-tags display-1 text-muted mb-3"></i>
+                <h4 class="mt-3">Nenhuma tag cadastrada</h4>
+                <p class="text-muted mb-4">Tags ajudam você a organizar e filtrar suas transações de forma personalizada.</p>
+                <a asp-action="Create" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Criar Primeira Tag
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+    </script>
+}

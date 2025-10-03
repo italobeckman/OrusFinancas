@@ -27,5 +27,8 @@ namespace OrusFinancas.Models
         // Relacionamento com Assinatura (apenas para despesas)
         public int? AssinaturaId { get; set; } 
         public Assinatura? Assinatura { get; set; }
+
+        // Relacionamento Many-to-Many com Tags
+        public ICollection<TransacaoTag> TransacoesTags { get; set; } = new List<TransacaoTag>();
     }
 }

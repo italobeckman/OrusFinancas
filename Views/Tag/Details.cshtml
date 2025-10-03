@@ -1,0 +1,141 @@
+@model OrusFinancas.Models.Tag
+
+@{
+    ViewData["Title"] = "Detalhes da Tag";
+    var transacoesRecentes = ViewBag.TransacoesRecentes as List<OrusFinancas.Models.Transacao> ?? new List<OrusFinancas.Models.Transacao>();
+    var corTag = !string.IsNullOrEmpty(Model.Cor) ? Model.Cor : "#6c757d";
+}
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="display-6 fw-bold text-primary">
+                <span class="badge rounded-pill me-2" 
+                      style="background-color: @corTag; width: 16px; height: 16px; padding: 0;">
+                </span>
+                @Model.Nome
+            </h1>
+            <p class="text-muted mb-0">Detalhes e transações associadas</p>
+        </div>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-info-circle"></i> Informações da Tag
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Nome:</dt>
+                    <dd class="col-sm-8">@Model.Nome</dd>
+                    
+                    <dt class="col-sm-4">Cor:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge" style="background-color: @corTag; padding: 8px 16px;">
+                            @corTag
+                        </span>
+                    </dd>
+                    
+                    @if (!string.IsNullOrEmpty(Model.Descricao))
+                    {
+                        <dt class="col-sm-4">Descrição:</dt>
+                        <dd class="col-sm-8">@Model.Descricao</dd>
+                    }
+                    
+                    <dt class="col-sm-4">Transações:</dt>
+                    <dd class="col-sm-8">
+                        <strong>@transacoesRecentes.Count</strong> registros
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-receipt"></i> Transações Recentes
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (transacoesRecentes.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Descrição</th>
+                                    <th>Conta</th>
+                                    <th>Categoria</th>
+                                    <th class="text-end">Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var transacao in transacoesRecentes)
+                                {
+                                    var isReceita = transacao is OrusFinancas.Models.Receita;
+                                    var valorClass = isReceita ? "text-success" : "text-danger";
+                                    var valorIcon = isReceita ? "bi-arrow-up-circle" : "bi-arrow-down-circle";
+                                    
+                                    <tr>
+                                        <td>
+                                            <small>@transacao.DataTransacao.ToString("dd/MM/yyyy")</small>
+                                        </td>
+                                        <td>@transacao.Descricao</td>
+                                        <td>
+                                            <small class="text-muted">
+                                                @transacao.Conta?.NomeBanco.ToString()
+                                            </small>
+                                        </td>
+                                        <td>
+                                            @if (transacao.Categoria != null)
+                                            {
+                                                <span class="badge bg-secondary">
+                                                    @transacao.Categoria.Nome
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <small class="text-muted">-</small>
+                                            }
+                                        </td>
+                                        <td class="text-end @valorClass">
+                                            <i class="bi @valorIcon"></i>
+                                            <strong>@transacao.Valor.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</strong>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    @if (transacoesRecentes.Count == 10)
+                    {
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle"></i> Mostrando as 10 transações mais recentes
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox display-4 text-muted"></i>
+                        <p class="text-muted mt-3 mb-0">Nenhuma transação associada a esta tag</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
