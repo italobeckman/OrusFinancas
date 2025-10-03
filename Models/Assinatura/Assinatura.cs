@@ -17,15 +17,30 @@ namespace OrusFinancas.Models
         public int UsuarioId { get; set; }
         public Usuario? Usuario { get; set; }
         
-        // Assinatura gera N Despesas (1:N)
-        // O diagrama sugere que a Despesa é gerada pela Assinatura, mas o relacionamento
-        // mais comum é Despesa pertence a Assinatura (N:1) ou Assinatura tem N Despesas.
-        // Assumindo Assinatura tem N Despesas:
-        public int DespesaId { get; set; }
-        public Despesa? Despesa { get; set; } // Aqui seria Despesa Gerada
+        // Conta onde será debitada a assinatura (opcional)
+        public int? ContaId { get; set; }
+        public Conta? Conta { get; set; }
 
-        public bool Ativa { get; set; }
+        public bool Ativa { get; set; } = true;
 
-        public DateTime DataAssinatura { get; set; }
+        public DateTime DataAssinatura { get; set; } = DateTime.Now;
+        
+        // Propriedade calculada para o próximo vencimento
+        [NotMapped]
+        public DateTime ProximoVencimento 
+        { 
+            get 
+            {
+                var proximoVencimento = DataAssinatura.AddMonths(1);
+                while (proximoVencimento < DateTime.Today)
+                {
+                    proximoVencimento = proximoVencimento.AddMonths(1);
+                }
+                return proximoVencimento;
+            } 
+        }
+        
+        // Relacionamento com transações (despesas geradas por esta assinatura)
+        public ICollection<Transacao> TransacoesGeradas { get; set; } = new List<Transacao>();
     }
 }

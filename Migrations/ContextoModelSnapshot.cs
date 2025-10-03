@@ -39,9 +39,6 @@ namespace OrusFinancas.Migrations
                     b.Property<DateTime>("DataAssinatura")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DespesaId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Servico")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -55,8 +52,6 @@ namespace OrusFinancas.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ContaId");
-
-                    b.HasIndex("DespesaId");
 
                     b.HasIndex("UsuarioId");
 
@@ -75,6 +70,9 @@ namespace OrusFinancas.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("TipoCategoria")
+                        .HasColumnType("int");
 
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
@@ -202,7 +200,7 @@ namespace OrusFinancas.Migrations
                     b.Property<int?>("AssinaturaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoriaId")
+                    b.Property<int?>("CategoriaId")
                         .HasColumnType("int");
 
                     b.Property<int>("ContaId")
@@ -282,6 +280,9 @@ namespace OrusFinancas.Migrations
                 {
                     b.HasBaseType("OrusFinancas.Models.Transacao");
 
+                    b.Property<int>("TipoReceita")
+                        .HasColumnType("int");
+
                     b.ToTable("Transacao");
 
                     b.HasDiscriminator().HasValue("Receita");
@@ -289,15 +290,10 @@ namespace OrusFinancas.Migrations
 
             modelBuilder.Entity("OrusFinancas.Models.Assinatura", b =>
                 {
-                    b.HasOne("OrusFinancas.Models.Conta", null)
+                    b.HasOne("OrusFinancas.Models.Conta", "Conta")
                         .WithMany("Assinaturas")
-                        .HasForeignKey("ContaId");
-
-                    b.HasOne("OrusFinancas.Models.Despesa", "Despesa")
-                        .WithMany("Assinaturas")
-                        .HasForeignKey("DespesaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ContaId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("OrusFinancas.Models.Usuario", "Usuario")
                         .WithMany()
@@ -305,7 +301,7 @@ namespace OrusFinancas.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Despesa");
+                    b.Navigation("Conta");
 
                     b.Navigation("Usuario");
                 });
@@ -368,14 +364,14 @@ namespace OrusFinancas.Migrations
             modelBuilder.Entity("OrusFinancas.Models.Transacao", b =>
                 {
                     b.HasOne("OrusFinancas.Models.Assinatura", "Assinatura")
-                        .WithMany()
-                        .HasForeignKey("AssinaturaId");
+                        .WithMany("TransacoesGeradas")
+                        .HasForeignKey("AssinaturaId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("OrusFinancas.Models.Categoria", "Categoria")
                         .WithMany("Transacoes")
                         .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("OrusFinancas.Models.Conta", "Conta")
                         .WithMany("Transacoes")
@@ -390,6 +386,11 @@ namespace OrusFinancas.Migrations
                     b.Navigation("Conta");
                 });
 
+            modelBuilder.Entity("OrusFinancas.Models.Assinatura", b =>
+                {
+                    b.Navigation("TransacoesGeradas");
+                });
+
             modelBuilder.Entity("OrusFinancas.Models.Categoria", b =>
                 {
                     b.Navigation("Transacoes");
@@ -400,11 +401,6 @@ namespace OrusFinancas.Migrations
                     b.Navigation("Assinaturas");
 
                     b.Navigation("Transacoes");
-                });
-
-            modelBuilder.Entity("OrusFinancas.Models.Despesa", b =>
-                {
-                    b.Navigation("Assinaturas");
                 });
 #pragma warning restore 612, 618
         }

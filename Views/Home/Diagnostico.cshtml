@@ -1,0 +1,228 @@
+@{
+    ViewData["Title"] = "Diagnóstico do Sistema";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1> Diagnóstico do Sistema</h1>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar ao Dashboard
+                </a>
+            </div>
+
+            <!-- Card de Teste de Conexão -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-wifi"></i> Teste de Conexão</h5>
+                </div>
+                <div class="card-body">
+                    <button id="btnTesteConexao" class="btn btn-primary">Testar Conexão</button>
+                    <div id="resultadoTeste" class="mt-3"></div>
+                </div>
+            </div>
+
+            <!-- Card de Estatísticas -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Estatísticas Rápidas</h5>
+                </div>
+                <div class="card-body">
+                    <button id="btnStats" class="btn btn-info">Obter Estatísticas</button>
+                    <div id="resultadoStats" class="mt-3"></div>
+                </div>
+            </div>
+
+            <!-- Card de Diagnóstico Completo -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="bi bi-search"></i> Diagnóstico Completo</h5>
+                </div>
+                <div class="card-body">
+                    <button id="btnDiagnostico" class="btn btn-warning">Executar Diagnóstico</button>
+                    <div id="resultadoDiagnostico" class="mt-3"></div>
+                </div>
+            </div>
+
+            <!-- Card de Ações Corretivas -->
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-tools"></i> Ações Corretivas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Problemas Comuns:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle text-success"></i> Banco de dados inacessível</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Dados corrompidos</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Configuração inicial necessária</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Cache desatualizado</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Ações Disponíveis:</h6>
+                            <div class="d-grid gap-2">
+                                <form method="post" action="@Url.Action("ProcessarAssinaturas", "Home")">
+                                    <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                                        Processar Assinaturas
+                                    </button>
+                                </form>
+                                <a href="@Url.Action("Index", "Conta")" class="btn btn-outline-secondary btn-sm">
+                                    Verificar Contas
+                                </a>
+                                <a href="@Url.Action("Index", "Categoria")" class="btn btn-outline-secondary btn-sm">
+                                    Verificar Categorias
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Teste de Conexão
+            $('#btnTesteConexao').click(function () {
+                const btn = $(this);
+                const result = $('#resultadoTeste');
+
+                btn.prop('disabled', true).text('Testando...');
+                result.html('<div class="spinner-border spinner-border-sm" role="status"></div> Testando conexão...');
+
+                $.get('@Url.Action("TesteConexao", "Home")')
+                    .done(function (data) {
+                        if (data.success) {
+                            result.html(`
+                                    <div class="alert alert-success">
+                                        <h6>? Conexão OK!</h6>
+                                        <pre>${JSON.stringify(data.data, null, 2)}</pre>
+                                    </div>
+                                `);
+                        } else {
+                            result.html(`
+                                    <div class="alert alert-danger">
+                                        <h6>? Erro de Conexão</h6>
+                                        <p><strong>Mensagem:</strong> ${data.message}</p>
+                                        ${data.innerException ? `<p><strong>Causa:</strong> ${data.innerException}</p>` : ''}
+                                    </div>
+                                `);
+                        }
+                    })
+                    .fail(function (xhr) {
+                        result.html(`
+                                <div class="alert alert-danger">
+                                    <h6>? Falha na Requisição</h6>
+                                    <p>Status: ${xhr.status} - ${xhr.statusText}</p>
+                                </div>
+                            `);
+                    })
+                    .always(function () {
+                        btn.prop('disabled', false).text('Testar Conexão');
+                    });
+            });
+
+            // Estatísticas
+            $('#btnStats').click(function () {
+                const btn = $(this);
+                const result = $('#resultadoStats');
+
+                btn.prop('disabled', true).text('Carregando...');
+                result.html('<div class="spinner-border spinner-border-sm" role="status"></div> Obtendo estatísticas...');
+
+                $.get('@Url.Action("GetQuickStats", "Home")')
+                    .done(function (data) {
+                        if (data.success) {
+                            const stats = data.data;
+                            result.html(`
+                                    <div class="alert alert-info">
+                                        <h6> Estatísticas do Sistema</h6>
+                                        <div class="row">
+                                            <div class="col-md-3 text-center">
+                                                <h4 class="text-primary">${stats.totalContas}</h4>
+                                                <small>Contas</small>
+                                            </div>
+                                            <div class="col-md-3 text-center">
+                                                <h4 class="text-success">${stats.totalTransacoes}</h4>
+                                                <small>Transações</small>
+                                            </div>
+                                            <div class="col-md-3 text-center">
+                                                <h4 class="text-warning">${stats.totalAssinaturasAtivas}</h4>
+                                                <small>Assinaturas</small>
+                                            </div>
+                                            <div class="col-md-3 text-center">
+                                                <h4 class="text-info">${stats.totalCategorias}</h4>
+                                                <small>Categorias</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `);
+                        } else {
+                            result.html(`
+                                    <div class="alert alert-danger">
+                                        <h6>? Erro ao obter estatísticas</h6>
+                                        <p>${data.message}</p>
+                                    </div>
+                                `);
+                        }
+                    })
+                    .fail(function (xhr) {
+                        result.html(`
+                                <div class="alert alert-danger">
+                                    <h6>? Falha na Requisição</h6>
+                                    <p>Status: ${xhr.status} - ${xhr.statusText}</p>
+                                </div>
+                            `);
+                    })
+                    .always(function () {
+                        btn.prop('disabled', false).text('Obter Estatísticas');
+                    });
+            });
+
+            // Diagnóstico Completo
+            $('#btnDiagnostico').click(function () {
+                const btn = $(this);
+                const result = $('#resultadoDiagnostico');
+
+                btn.prop('disabled', true).text('Executando...');
+                result.html('<div class="spinner-border spinner-border-sm" role="status"></div> Executando diagnóstico completo...');
+
+                $.get('@Url.Action("DiagnosticoSistema", "Home")')
+                    .done(function (data) {
+                        if (data.success) {
+                            const diag = data.data;
+                            result.html(`
+                                    <div class="alert alert-success">
+                                        <h6> Diagnóstico Completo</h6>
+                                        <pre>${JSON.stringify(diag, null, 2)}</pre>
+                                    </div>
+                                `);
+                        } else {
+                            result.html(`
+                                    <div class="alert alert-danger">
+                                        <h6>? Erro no diagnóstico</h6>
+                                        <p>${data.message}</p>
+                                    </div>
+                                `);
+                        }
+                    })
+                    .fail(function (xhr) {
+                        result.html(`
+                                <div class="alert alert-danger">
+                                    <h6>? Falha na Requisição</h6>
+                                    <p>Status: ${xhr.status} - ${xhr.statusText}</p>
+                                </div>
+                            `);
+                    })
+                    .always(function () {
+                        btn.prop('disabled', false).text('Executar Diagnóstico');
+                    });
+            });
+        });
+    </script>
+}

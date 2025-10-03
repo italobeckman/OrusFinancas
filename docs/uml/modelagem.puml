@@ -1,0 +1,186 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam monochrome true
+
+package "OrusFinancas.Models" {
+    class Usuario {
+        +Id : int
+        +Nome : string
+        +Email : string
+        +SenhaHash : string
+        +DataCadastro : DateTime
+    }
+
+    class PerfilFinanceiro {
+        +Id : int
+        +RendaMensal : decimal
+        +Metas : string
+        +UsuarioId : int
+        +Usuario : Usuario
+    }
+
+    class Conta {
+        +Id : int
+        +NomeBanco : Bancos
+        +SaldoInicial : decimal
+        +Tipo : TipoConta
+        +SaldoAtual : decimal {readOnly}
+        +VariacaoTotal : decimal {derived}
+        +TemCrescimento : bool {derived}
+        +UsuarioId : int
+        +Usuario : Usuario
+        +Transacoes : ICollection<Transacao>
+        +Assinaturas : ICollection<Assinatura>
+    }
+
+    class Categoria {
+        +Id : int
+        +Nome : string
+        +TipoCategoria : TipoCategoria
+        +UsuarioId : int
+        +Usuario : Usuario
+        +Transacoes : ICollection<Transacao>
+    }
+
+    class Assinatura {
+        +Id : int
+        +Servico : string
+        +ValorMensal : decimal
+        +UsuarioId : int
+        +Usuario : Usuario
+        +ContaId : int?
+        +Conta : Conta
+        +Ativa : bool
+        +DataAssinatura : DateTime
+        +ProximoVencimento : DateTime {derived}
+        +TransacoesGeradas : ICollection<Transacao>
+    }
+
+    abstract class Transacao {
+        +Id : int
+        +DataTransacao : DateTime
+        +Valor : decimal
+        +Descricao : string
+        +ContaId : int
+        +Conta : Conta
+        +CategoriaId : int?
+        +Categoria : Categoria
+        +AssinaturaId : int?
+        +Assinatura : Assinatura
+    }
+
+    class Receita {
+        +TipoReceita : TipoReceita
+        +AssinaturaId : int? {null}
+        +Assinatura : Assinatura {null}
+    }
+
+    class Despesa {
+    }
+
+    class Orcamento {
+        +Id : int
+        +Nome : string
+        +ValorLimite : decimal
+        +UsuarioId : int
+        +Usuario : Usuario
+    }
+
+    class InsightFinanceiro {
+        +Id : int
+        +Titulo : string
+        +Detalhe : string
+        +DataGeracao : DateTime
+        +UsuarioId : int
+        +Usuario : Usuario
+    }
+
+    class Contexto {
+        +Usuarios : DbSet<Usuario>
+        +PerfisFinanceiros : DbSet<PerfilFinanceiro>
+        +Contas : DbSet<Conta>
+        +Orcamentos : DbSet<Orcamento>
+        +Categorias : DbSet<Categoria>
+        +Assinaturas : DbSet<Assinatura>
+        +Insights : DbSet<InsightFinanceiro>
+        +Transacoes : DbSet<Transacao>
+        +Receitas : DbSet<Receita>
+        +Despesas : DbSet<Despesa>
+    }
+
+    enum TipoConta {
+        Corrente
+        CartaoCredito
+        CarteiraDigital
+    }
+
+    enum Bancos {
+        BancoDoBrasil
+        Itau
+        Bradesco
+        CaixaEconomica
+        Santander
+        Safra
+        Nubank
+        Inter
+        C6Bank
+        BTG
+        XP
+        Original
+        PicPay
+        PayPal
+        MercadoPago
+        CarteiraFisica
+        ContaPadrao
+        Outro
+    }
+
+    enum TipoCategoria {
+        Despesa
+        Meta
+    }
+
+    enum TipoReceita {
+        Salario
+        Freelance
+        Investimentos
+        Vendas
+        Bonificacao
+        DecimoTerceiro
+        Ferias
+        Outras
+    }
+}
+
+Usuario "1" -- "0..1" PerfilFinanceiro
+Usuario "1" -- "0..*" Conta
+Usuario "1" -- "0..*" Categoria
+Usuario "1" -- "0..*" Assinatura
+Usuario "1" -- "0..*" Orcamento
+Usuario "1" -- "0..*" InsightFinanceiro
+
+Transacao "0..*" --> "1" Conta : conta
+Transacao "0..*" --> "0..1" Categoria : categoria
+Transacao "0..*" --> "0..1" Assinatura : assinatura
+
+Assinatura "0..*" --> "0..1" Conta : conta
+
+Receita -|> Transacao
+Despesa -|> Transacao
+
+Conta --> TipoConta
+Conta --> Bancos
+Categoria --> TipoCategoria
+Receita --> TipoReceita
+
+note top of Transacao
+ mapeia Receita e Despesa
+em uma única tabela "Transacao" com discriminador.
+end note
+
+note top of Assinatura
+ProximoVencimento é calculado com base na DataAssinatura.
+end note
+
+@enduml

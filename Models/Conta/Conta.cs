@@ -10,24 +10,49 @@ namespace OrusFinancas.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "O nome é obrigatório.")]
-        public Bancos NomeBanco { get; set; }// Nome ou Instituição (ex: NuBank, Banco do Brasil)
+        [Display(Name = "Banco/Instituição")]
+        public Bancos NomeBanco { get; set; }
 
+        /// <summary>
+        /// Saldo com que a conta foi aberta no sistema.
+        /// Este valor é usado apenas como referência histórica e NÃO deve ser alterado após a criação.
+        /// Serve para calcular a variação financeira desde a criação da conta.
+        /// </summary>
         [Required(ErrorMessage = "O saldo inicial é obrigatório.")]
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal SaldoInicial { get; set; } // O saldo com que a conta foi aberta
+        [Display(Name = "Saldo ao Cadastrar")]
+        public decimal SaldoInicial { get; set; }
 
-        // Campo para o Requisito: Identifica o tipo de conta (Corrente, Cartão, Carteira)
         [Required(ErrorMessage = "O tipo da conta é obrigatório.")]
+        [Display(Name = "Tipo de Conta")]
         public TipoConta Tipo { get; set; }
 
-        // O SaldoAtual deve ser calculado: SaldoInicial + (Total Receitas) - (Total Despesas)
-        // Por isso, ele não deve ser persistido.
-        [NotMapped] // <-- Use [NotMapped] para um campo que é calculado e não vai para o DB
-        public decimal SaldoAtual { get; set; } 
+        /// <summary>
+        /// Saldo atual calculado dinamicamente: Soma de TODAS as transações (Receitas - Despesas).
+        /// NÃO usa o SaldoInicial no cálculo, apenas as transações registradas no sistema.
+        /// </summary>
+        [NotMapped]
+        [Display(Name = "Saldo Atual")]
+        public decimal SaldoAtual { get; set; }
+
+        /// <summary>
+        /// Variação total desde a criação da conta (SaldoAtual - SaldoInicial).
+        /// Mostra o quanto a conta cresceu ou diminuiu desde que foi cadastrada.
+        /// </summary>
+        [NotMapped]
+        [Display(Name = "Variação Total")]
+        public decimal VariacaoTotal => SaldoAtual - SaldoInicial;
+
+        /// <summary>
+        /// Indica se a conta teve evolução positiva desde a criação
+        /// </summary>
+        [NotMapped]
+        public bool TemCrescimento => VariacaoTotal > 0;
 
         // Relacionamento com Usuário (1:N)
-        [Required] // Toda Conta deve ter um Usuário
-        public Usuario Usuario { get; set; } = default!; // Mudança: Deve ser não-nullable se a FK for obrigatória
+        public int UsuarioId { get; set; }
+        [Required]
+        public Usuario Usuario { get; set; } = default!;
 
         // Propriedades de Navegação
         public ICollection<Transacao> Transacoes { get; set; } = new List<Transacao>();
@@ -61,6 +86,12 @@ namespace OrusFinancas.Models
         
         [Display(Name = "Caixa Econômica Federal")]
         CaixaEconomica = 4,
+        
+        [Display(Name = "Santander")]
+        Santander = 5,
+        
+        [Display(Name = "Banco Safra")]
+        Safra = 6,
 
         // Bancos Digitais / Fintechs
         [Display(Name = "Nubank")]
@@ -72,8 +103,32 @@ namespace OrusFinancas.Models
         [Display(Name = "C6 Bank")]
         C6Bank = 12,
         
+        [Display(Name = "BTG Pactual")]
+        BTG = 13,
+        
+        [Display(Name = "XP Investimentos")]
+        XP = 14,
+        
+        [Display(Name = "Banco Original")]
+        Original = 15,
+
         // Carteiras Digitais e Outros
         [Display(Name = "PicPay")]
         PicPay = 20,
+        
+        [Display(Name = "PayPal")]
+        PayPal = 21,
+        
+        [Display(Name = "Mercado Pago")]
+        MercadoPago = 22,
+        
+        [Display(Name = "Carteira Física")]
+        CarteiraFisica = 30,
+
+        [Display(Name = "Conta Padrão")]
+        ContaPadrao = 98,
+
+        [Display(Name = "Outro")]
+        Outro = 99
     }
 }

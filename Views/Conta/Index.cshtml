@@ -1,0 +1,258 @@
+@model IEnumerable<OrusFinancas.Models.Conta>
+@using OrusFinancas.Extensions
+
+@{
+    ViewData["Title"] = "Minhas Contas";
+    var totalSaldoAtual = Model.Sum(c => c.SaldoAtual);
+    var totalSaldoInicial = Model.Sum(c => c.SaldoInicial);
+    var variacaoGeral = totalSaldoAtual - totalSaldoInicial;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="display-6 fw-bold text-primary mb-1">
+            <i class="bi bi-wallet2-fill me-2"></i>Minhas Contas
+        </h1>
+        <p class="text-muted mb-0">Gerencie suas contas bancárias, cartões e carteiras digitais</p>
+    </div>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Nova Conta
+    </a>
+</div>
+
+@if (Model.Any())
+{
+    <!-- Cards de Contas -->
+    <div class="row g-4 mb-4">
+        @foreach (var conta in Model)
+        {
+            var iconeConta = conta.Tipo == OrusFinancas.Models.TipoConta.CartaoCredito ? "credit-card" : 
+                            conta.Tipo == OrusFinancas.Models.TipoConta.CarteiraDigital ? "wallet2" : "bank";
+            var corVariacao = conta.VariacaoTotal >= 0 ? "success" : "danger";
+            var simboloVariacao = conta.VariacaoTotal >= 0 ? "+" : "";
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header bg-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-@iconeConta me-2"></i>@conta.NomeBanco.GetDisplayName()
+                                </h5>
+                                <small class="text-light opacity-75">@conta.Tipo.GetDisplayName()</small>
+                            </div>
+                            @if (conta.TemCrescimento)
+                            {
+                                <i class="bi bi-graph-up-arrow fs-3 opacity-75"></i>
+                            }
+                            else if (conta.VariacaoTotal < 0)
+                            {
+                                <i class="bi bi-graph-down-arrow fs-3 opacity-75"></i>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Saldo Atual (Principal) -->
+                        <div class="text-center mb-3 py-3 rounded" style="background-color: #f8f9fa;">
+                            <small class="text-muted d-block mb-1">Saldo Atual</small>
+                            <h3 class="mb-0 fw-bold @(conta.SaldoAtual >= 0 ? "text-success" : "text-danger")">
+                                @conta.SaldoAtual.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
+                            </h3>
+                        </div>
+                        
+                        <!-- Informações Secundárias -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="p-2 border rounded">
+                                    <small class="text-muted d-block">Saldo Inicial</small>
+                                    <strong class="small">@conta.SaldoInicial.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 border rounded">
+                                    <small class="text-muted d-block">Variação</small>
+                                    <strong class="small text-@corVariacao">
+                                        @simboloVariacao@conta.VariacaoTotal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Indicador Visual de Progresso -->
+                        @if (conta.SaldoInicial != 0)
+                        {
+                            var percentualVariacao = (conta.VariacaoTotal / Math.Abs(conta.SaldoInicial)) * 100;
+                            var progressBarClass = conta.VariacaoTotal >= 0 ? "bg-success" : "bg-danger";
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <small class="text-muted">
+                                        <i class="bi bi-graph-up"></i> Evolução desde a criação
+                                    </small>
+                                    <span class="badge bg-@corVariacao">
+                                        @simboloVariacao@percentualVariacao.ToString("F1")%
+                                    </span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar @progressBarClass" 
+                                         role="progressbar" 
+                                         style="width: @Math.Min(Math.Abs(percentualVariacao), 100)%;">
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="btn-group w-100" role="group">
+                            <a asp-action="Edit" asp-route-id="@conta.Id" 
+                               class="btn btn-sm btn-outline-primary"
+                               data-bs-toggle="tooltip" title="Editar conta">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a asp-controller="Transacao" asp-action="Create" asp-route-contaId="@conta.Id" 
+                               class="btn btn-sm btn-outline-success"
+                               data-bs-toggle="tooltip" title="Nova transação">
+                                <i class="bi bi-plus-lg"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@conta.Id" 
+                               class="btn btn-sm btn-outline-danger"
+                               data-bs-toggle="tooltip" title="Excluir conta">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Resumo Geral -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">
+                <i class="bi bi-bar-chart-fill"></i> Resumo Consolidado
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row text-center g-4">
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <i class="bi bi-collection text-primary display-6 mb-2"></i>
+                        <h4 class="text-primary mb-1">@Model.Count()</h4>
+                        <small class="text-muted">Contas Cadastradas</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 rounded" style="background-color: #e3f2fd;">
+                        <i class="bi bi-calendar-check text-info display-6 mb-2"></i>
+                        <h4 class="text-info mb-1">
+                            @totalSaldoInicial.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
+                        </h4>
+                        <small class="text-muted">Saldo Inicial Total</small>
+                        <br>
+                        <small class="text-muted fst-italic">(Referência histórica)</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 rounded" style="background-color: @(totalSaldoAtual >= 0 ? "#e8f5e9" : "#ffebee");">
+                        <i class="bi bi-cash-stack @(totalSaldoAtual >= 0 ? "text-success" : "text-danger") display-6 mb-2"></i>
+                        <h4 class="@(totalSaldoAtual >= 0 ? "text-success" : "text-danger") mb-1">
+                            @totalSaldoAtual.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
+                        </h4>
+                        <small class="text-muted">Saldo Atual Total</small>
+                        <br>
+                        <small class="text-muted fst-italic">(Soma das transações)</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 rounded" style="background-color: @(variacaoGeral >= 0 ? "#e8f5e9" : "#ffebee");">
+                        <i class="bi bi-@(variacaoGeral >= 0 ? "arrow-up-circle-fill" : "arrow-down-circle-fill") @(variacaoGeral >= 0 ? "text-success" : "text-danger") display-6 mb-2"></i>
+                        <h4 class="@(variacaoGeral >= 0 ? "text-success" : "text-danger") mb-1">
+                            @(variacaoGeral >= 0 ? "+" : "")@variacaoGeral.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
+                        </h4>
+                        <small class="text-muted">Variação Total</small>
+                        <br>
+                        <small class="text-muted fst-italic">(Atual - Inicial)</small>
+                    </div>
+                </div>
+            </div>
+            
+            @if (variacaoGeral != 0 && totalSaldoInicial != 0)
+            {
+                var percentualGeralVariacao = (variacaoGeral / Math.Abs(totalSaldoInicial)) * 100;
+                <hr class="my-4">
+                <div class="alert @(variacaoGeral >= 0 ? "alert-success" : "alert-danger") border-0 mb-0">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-@(variacaoGeral >= 0 ? "emoji-smile" : "emoji-frown") fs-3 me-3"></i>
+                        <div>
+                            @if (variacaoGeral >= 0)
+                            {
+                                <text>
+                                    <strong>Parabéns! 🎉</strong> Suas contas tiveram uma evolução positiva de 
+                                    <strong>@((variacaoGeral >= 0 ? "+" : ""))@percentualGeralVariacao.ToString("F1")%</strong> 
+                                    desde que foram cadastradas no sistema.
+                                </text>
+                            }
+                            else
+                            {
+                                <text>
+                                    <strong>Atenção!</strong> Suas contas tiveram uma variação negativa de 
+                                    <strong>@percentualGeralVariacao.ToString("F1")%</strong> 
+                                    desde que foram cadastradas. Revise seus gastos.
+                                </text>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="card shadow-sm border-0">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-wallet2 display-1 text-muted mb-3"></i>
+            <h4 class="mt-3">Nenhuma conta cadastrada</h4>
+            <p class="text-muted mb-4">
+                Comece adicionando suas contas bancárias, cartões de crédito ou carteiras digitais 
+                para ter controle completo das suas finanças.
+            </p>
+            <a asp-action="Create" class="btn btn-success btn-lg">
+                <i class="bi bi-plus-circle"></i> Adicionar Primeira Conta
+            </a>
+        </div>
+    </div>
+}
+
+<!-- Dicas Melhoradas -->
+<div class="alert alert-info border-0 mt-4">
+    <h6><i class="bi bi-lightbulb-fill"></i> Entenda o Sistema de Contas:</h6>
+    <ul class="mb-0 small">
+        <li><strong>Saldo Inicial:</strong> É apenas uma referência histórica de quanto você tinha ao cadastrar a conta. Não é alterado nem usado em cálculos.</li>
+        <li><strong>Saldo Atual:</strong> Calculado automaticamente pela soma de todas as receitas e despesas registradas na conta.</li>
+        <li><strong>Variação Total:</strong> Mostra quanto sua conta cresceu ou diminuiu desde o cadastro (Saldo Atual - Saldo Inicial).</li>
+        <li><strong>Importante:</strong> Para refletir o saldo real, adicione uma receita inicial com o valor do saldo ao criar a conta.</li>
+    </ul>
+</div>
+
+<div class="mt-4">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar ao Dashboard
+    </a>
+    <a asp-controller="Transacao" asp-action="Index" class="btn btn-outline-primary ms-2">
+        <i class="bi bi-list-ul"></i> Ver Transações
+    </a>
+</div>
+
+@section Scripts {
+    <script>
+        // Inicializar tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+}

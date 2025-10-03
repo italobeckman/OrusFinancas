@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "Acesso Negado";
+    Layout = "_LayoutAuth";
+}
+
+<div class="card">
+    <div class="card-body text-center">
+        <div class="mb-4">
+            <i class="bi bi-shield-exclamation display-1 text-warning"></i>
+        </div>
+        
+        <h2 class="mb-3">Acesso Negado</h2>
+        <p class="text-muted mb-4">
+            Voc? nÿo tem permissÿo para acessar esta pÿgina. 
+            <br>Faÿa login para continuar.
+        </p>
+        
+        <div class="d-grid">
+            <a asp-action="Login" class="btn btn-success">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Fazer Login
+            </a>
+        </div>
+    </div>
+</div>

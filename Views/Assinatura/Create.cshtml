@@ -1,0 +1,116 @@
+@model OrusFinancas.Models.Assinatura
+
+@{
+    ViewData["Title"] = "Nova Assinatura";
+}
+
+<h1>Nova Assinatura</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label asp-for="Servico" class="form-label">Nome do Serviço *</label>
+                    <input asp-for="Servico" class="form-control" placeholder="Ex: Netflix, Spotify, Academia..." />
+                    <span asp-validation-for="Servico" class="text-danger"></span>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label asp-for="ValorMensal" class="form-label">Valor Mensal *</label>
+                    <div class="input-group">
+                        <span class="input-group-text">R$</span>
+                        <input asp-for="ValorMensal" class="form-control money" placeholder="0,00" type="text" />
+                    </div>
+                    <span asp-validation-for="ValorMensal" class="text-danger"></span>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="DataAssinatura" class="form-label">Data de Início *</label>
+                    <input asp-for="DataAssinatura" class="form-control" type="date" />
+                    <span asp-validation-for="DataAssinatura" class="text-danger"></span>
+                    <div class="form-text">Define o dia do mês em que a cobrança ocorrerá</div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ContaId" class="form-label">Conta (Opcional)</label>
+                    <select asp-for="ContaId" class="form-select">
+                        <option value="">Conta padrão</option>
+                        @if (ViewBag.Contas != null)
+                        {
+                            @foreach (var conta in (List<OrusFinancas.Models.Conta>)ViewBag.Contas)
+                            {
+                                <option value="@conta.Id">@conta.NomeBanco - @conta.Tipo</option>
+                            }
+                        }
+                    </select>
+                    <div class="form-text">Escolha de qual conta será debitada a assinatura</div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        <input asp-for="Ativa" class="form-check-input" checked />
+                        <label asp-for="Ativa" class="form-check-label">Assinatura ativa</label>
+                        <div class="form-text">Marque se a assinatura está ativa no momento</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-save"></i> Salvar Assinatura
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6 class="card-title">Dicas</h6>
+                <ul class="list-unstyled small">
+                    <li> <strong>Nome do Serviço:</strong> Use um nome que facilite a identificação (Ex: "Netflix Família", "Academia Smart Fit")</li>
+                    <li> <strong>Data de Início:</strong> O dia escolhido será usado para calcular os próximos vencimentos</li>
+                    <li> <strong>Valor:</strong> Informe o valor exato cobrado mensalmente</li>
+                    <li> <strong>Conta:</strong> Se não especificar, usará sua conta padrão</li>
+                    <li> Você pode desativar uma assinatura sem excluí-la</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card bg-info text-white mt-3">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-lightbulb"></i> Automação</h6>
+                <p class="card-text small mb-0">
+                    O sistema pode gerar despesas automaticamente no dia do vencimento das suas assinaturas ativas, 
+                    facilitando o controle financeiro.
+                </p>
+            </div>
+        </div>
+        
+        @if (ViewBag.Contas == null || !((List<OrusFinancas.Models.Conta>)ViewBag.Contas).Any())
+        {
+            <div class="alert alert-warning mt-3">
+                <i class="bi bi-exclamation-triangle"></i>
+                <strong>Atenção!</strong> Você precisa ter pelo menos uma conta cadastrada.
+                <br>
+                <a asp-controller="Conta" asp-action="Create" class="btn btn-sm btn-outline-warning mt-2">
+                    Criar Conta
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

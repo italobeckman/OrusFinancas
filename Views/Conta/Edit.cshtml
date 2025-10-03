@@ -1,0 +1,201 @@
+@model OrusFinancas.Models.Conta
+@using OrusFinancas.Models
+@using OrusFinancas.Extensions
+
+@{
+    ViewData["Title"] = "Editar Conta";
+    var variacao = Model.SaldoAtual - Model.SaldoInicial;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="display-6 fw-bold text-primary mb-1">
+            <i class="bi bi-pencil-square me-2"></i>Editar Conta
+        </h1>
+        <p class="text-muted mb-0">@Model.NomeBanco.GetDisplayName() - @Model.Tipo.GetDisplayName()</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="UsuarioId" />
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="NomeBanco" class="form-label fw-semibold">
+                                <i class="bi bi-bank"></i> Banco/Instituição
+                            </label>
+                            <select asp-for="NomeBanco" class="form-select form-select-lg" asp-items="Html.GetEnumSelectList<Bancos>()">
+                                <option value="">Selecione o banco</option>
+                            </select>
+                            <span asp-validation-for="NomeBanco" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="Tipo" class="form-label fw-semibold">
+                                <i class="bi bi-credit-card"></i> Tipo da Conta
+                            </label>
+                            <select asp-for="Tipo" class="form-select form-select-lg" asp-items="Html.GetEnumSelectList<TipoConta>()">
+                                <option value="">Selecione o tipo</option>
+                            </select>
+                            <span asp-validation-for="Tipo" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="SaldoInicial" class="form-label fw-semibold">
+                                <i class="bi bi-calendar-check"></i> Saldo Inicial (Referência Histórica)
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light">R$</span>
+                                <input asp-for="SaldoInicial" class="form-control" type="number" step="0.01" />
+                            </div>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> 
+                                Valor de referência. Altere apenas se necessário.
+                            </div>
+                            <span asp-validation-for="SaldoInicial" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-cash-stack"></i> Saldo Atual (Calculado)
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light">R$</span>
+                                <input type="text" 
+                                       class="form-control @(Model.SaldoAtual >= 0 ? "text-success" : "text-danger") fw-bold" 
+                                       value="@Model.SaldoAtual.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))" 
+                                       readonly />
+                            </div>
+                            <div class="form-text">
+                                <i class="bi bi-calculator"></i> 
+                                Soma de todas as transações (Receitas - Despesas)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning border-0 mb-4">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-exclamation-triangle-fill"></i> Atenção ao Editar
+                        </h6>
+                        <ul class="mb-0 small">
+                            <li>O <strong>Saldo Inicial</strong> só deve ser alterado em casos excepcionais (erro de cadastro)</li>
+                            <li>Alterar o Saldo Inicial afeta o cálculo de <strong>Variação Total</strong>, mas não o Saldo Atual</li>
+                            <li>O <strong>Saldo Atual</strong> é sempre calculado pelas transações e não pode ser editado manualmente</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between gap-2">
+                        <div>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Salvar Alterações
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg ms-2">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-lg">
+                            <i class="bi bi-trash"></i> Excluir
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Resumo da Conta -->
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0">
+                    <i class="bi bi-bar-chart-fill"></i> Resumo da Conta
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3 pb-3 border-bottom">
+                    <small class="text-muted d-block mb-1">Saldo Inicial (Referência)</small>
+                    <h5 class="mb-0 text-info">
+                        @Model.SaldoInicial.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
+                    </h5>
+                </div>
+                
+                <div class="mb-3 pb-3 border-bottom">
+                    <small class="text-muted d-block mb-1">Saldo Atual (Transações)</small>
+                    <h4 class="mb-0 @(Model.SaldoAtual >= 0 ? "text-success" : "text-danger")">
+                        @Model.SaldoAtual.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
+                    </h4>
+                </div>
+                
+                <div>
+                    <small class="text-muted d-block mb-1">Variação Total</small>
+                    <h5 class="mb-0 @(variacao >= 0 ? "text-success" : "text-danger")">
+                        <i class="bi bi-@(variacao >= 0 ? "arrow-up-circle-fill" : "arrow-down-circle-fill")"></i>
+                        @(variacao >= 0 ? "+" : "")@variacao.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
+                    </h5>
+                    <small class="text-muted fst-italic">(Atual - Inicial)</small>
+                </div>
+                
+                @if (variacao != 0 && Model.SaldoInicial != 0)
+                {
+                    var percentualVariacao = (variacao / Math.Abs(Model.SaldoInicial)) * 100;
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">Evolução</small>
+                            <span class="badge bg-@(variacao >= 0 ? "success" : "danger")">
+                                @(variacao >= 0 ? "+" : "")@percentualVariacao.ToString("F1")%
+                            </span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-@(variacao >= 0 ? "success" : "danger")" 
+                                 role="progressbar" 
+                                 style="width: @Math.Min(Math.Abs(percentualVariacao), 100)%;">
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        
+        <!-- Dicas -->
+        <div class="card bg-light border-0">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="bi bi-lightbulb-fill text-warning"></i> Dicas
+                </h6>
+                <ul class="list-unstyled mb-0 small">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        O Saldo Atual é sempre preciso
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-shield-check text-success me-2"></i>
+                        Transações não serão afetadas
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-graph-up text-info me-2"></i>
+                        Acompanhe a evolução pela Variação
+                    </li>
+                    <li>
+                        <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                        Não edite Saldo Inicial sem necessidade
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

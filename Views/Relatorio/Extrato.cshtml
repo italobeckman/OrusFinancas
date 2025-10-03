@@ -1,0 +1,109 @@
+@model List<OrusFinancas.Models.Transacao>
+
+@{
+    ViewData["Title"] = "Extrato Financeiro";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Extrato Financeiro</h2>
+</div>
+
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="contaId" class="form-label">Conta</label>
+                <select name="contaId" id="contaId" class="form-select">
+                    <option value="">Todas as contas</option>
+                    @if (ViewBag.Contas != null)
+                    {
+                        @foreach (var conta in ViewBag.Contas as List<OrusFinancas.Models.Conta>)
+                        {
+                            <option value="@conta.Id" selected="@(ViewBag.ContaId?.ToString() == conta.Id.ToString())">
+                                @conta.NomeBanco - @conta.Tipo
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="dataInicio" class="form-label">Data Inicio</label>
+                <input type="date" name="dataInicio" id="dataInicio" class="form-control" value="@ViewBag.DataInicio">
+            </div>
+            <div class="col-md-3">
+                <label for="dataFim" class="form-label">Data Fim</label>
+                <input type="date" name="dataFim" id="dataFim" class="form-control" value="@ViewBag.DataFim">
+            </div>
+            <div class="col-md-2">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary d-block w-100">Filtrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Extrato -->
+<div class="card">
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Categoria</th>
+                            <th>Conta</th>
+                            <th>Tipo</th>
+                            <th class="text-end">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var transacao in Model)
+                        {
+                            <tr>
+                                <td>@transacao.DataTransacao.ToString("dd/MM/yyyy")</td>
+                                <td>@transacao.Descricao</td>
+                                <td>
+                                    @if (transacao.Categoria != null)
+                                    {
+                                        <span class="badge bg-secondary">@transacao.Categoria.Nome</span>
+                                    }
+                                </td>
+                                <td>@transacao.Conta.NomeBanco</td>
+                                <td>
+                                    @if (transacao is OrusFinancas.Models.Receita)
+                                    {
+                                        <span class="badge bg-success">Receita</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Despesa</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (transacao is OrusFinancas.Models.Receita)
+                                    {
+                                        <span class="text-success">+ @transacao.Valor.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">- @transacao.Valor.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <p class="text-muted">Nenhuma transação encontrada para os filtros aplicados.</p>
+            </div>
+        }
+    </div>
+</div>
