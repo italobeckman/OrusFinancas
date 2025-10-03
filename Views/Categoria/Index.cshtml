@@ -2,65 +2,140 @@
 
 @{
     ViewData["Title"] = "Categorias";
+    
+    // Calcular gastos por categoria do mês atual
+    var totalGeralGastos = ViewBag.TotalGeralGastos ?? 0m;
+    var gastosPorCategoria = ViewBag.GastosPorCategoria as Dictionary<int, decimal> ?? new Dictionary<int, decimal>();
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Minhas Categorias</h1>
+    <div>
+        <h1 class="display-6 fw-bold text-primary mb-1">
+            <i class="bi bi-tags-fill me-2"></i>Categorias
+        </h1>
+        <p class="text-muted mb-0">Organize e visualize seus gastos por categoria</p>
+    </div>
     <a asp-action="Create" class="btn btn-success">
         <i class="bi bi-plus-circle"></i> Nova Categoria
     </a>
 </div>
 
-@if (TempData["Success"] != null)
+@if (totalGeralGastos > 0)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert alert-info border-0 mb-4">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+            <div>
+                <strong>Total de gastos no mês atual:</strong> 
+                @totalGeralGastos.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
+            </div>
+        </div>
     </div>
 }
 
-<div class="card">
+<div class="card shadow-sm border-0">
     <div class="card-body">
         @if (Model.Any())
         {
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Nome</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var categoria in Model)
-                        {
-                            <tr>
-                                <td>@categoria.Nome</td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="Edit" asp-route-id="@categoria.Id" class="btn btn-outline-primary btn-sm">
-                                            <i class="bi bi-pencil"></i> Editar
-                                        </a>
-                                        <a asp-action="Details" asp-route-id="@categoria.Id" class="btn btn-outline-info btn-sm">
-                                            <i class="bi bi-eye"></i> Detalhes
-                                        </a>
-                                        <a asp-action="Delete" asp-route-id="@categoria.Id" class="btn btn-outline-danger btn-sm">
-                                            <i class="bi bi-trash"></i> Excluir
-                                        </a>
+            <div class="row g-3">
+                @foreach (var categoria in Model)
+                {
+                    var gastoCategoria = gastosPorCategoria.ContainsKey(categoria.Id) ? gastosPorCategoria[categoria.Id] : 0m;
+                    var percentual = totalGeralGastos > 0 ? (gastoCategoria / totalGeralGastos * 100) : 0;
+                    var progressBarClass = percentual > 30 ? "bg-danger" : percentual > 15 ? "bg-warning" : "bg-success";
+                    var cardBorderClass = percentual > 30 ? "border-danger" : percentual > 15 ? "border-warning" : "border-success";
+                    
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 @cardBorderClass" style="border-left: 4px solid;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title mb-1">
+                                            <i class="bi bi-tag-fill text-primary me-2"></i>@categoria.Nome
+                                        </h5>
+                                        <small class="text-muted">
+                                            <i class="bi bi-folder2-open"></i> @categoria.TipoCategoria.ToString()
+                                        </small>
                                     </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                                </div>
+                                
+                                @if (gastoCategoria > 0)
+                                {
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted">Gasto no mês</small>
+                                            <div class="text-end">
+                                                <strong class="text-danger">
+                                                    @gastoCategoria.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
+                                                </strong>
+                                                <br>
+                                                <span class="badge @(percentual > 30 ? "bg-danger" : percentual > 15 ? "bg-warning" : "bg-success") mt-1">
+                                                    @percentual.ToString("F1")%
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar @progressBarClass" 
+                                                 role="progressbar" 
+                                                 style="width: @Math.Min(percentual, 100)%;" 
+                                                 aria-valuenow="@percentual" 
+                                                 aria-valuemin="0" 
+                                                 aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted mt-1 d-block">
+                                            <i class="bi bi-pie-chart"></i> @percentual.ToString("F1")% do total mensal
+                                        </small>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="mb-3">
+                                        <p class="text-muted small mb-0">
+                                            <i class="bi bi-calendar-x"></i> Nenhuma despesa neste mês
+                                        </p>
+                                    </div>
+                                }
+                                
+                                <div class="btn-group w-100" role="group">
+                                    <a asp-action="Edit" asp-route-id="@categoria.Id" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@categoria.Id" class="btn btn-outline-info btn-sm">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@categoria.Id" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            <div class="mt-4 pt-3 border-top">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-collection"></i> 
+                            <strong>@Model.Count()</strong> categorias cadastradas
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <a asp-controller="Relatorio" asp-action="GraficoGastosPorCategoria" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-graph-up"></i> Ver Relatório Detalhado
+                        </a>
+                    </div>
+                </div>
             </div>
         }
         else
         {
             <div class="text-center py-5">
-                <i class="bi bi-folder2-open display-1 text-muted"></i>
+                <i class="bi bi-folder2-open display-1 text-muted mb-3"></i>
                 <h4 class="mt-3">Nenhuma categoria cadastrada</h4>
-                <p class="text-muted">Comece criando sua primeira categoria para organizar suas transações.</p>
+                <p class="text-muted mb-4">Comece criando sua primeira categoria para organizar suas transações.</p>
                 <a asp-action="Create" class="btn btn-success">
                     <i class="bi bi-plus-circle"></i> Criar Primeira Categoria
                 </a>
@@ -68,3 +143,15 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Tooltips para informações adicionais
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+}

@@ -1,11 +1,11 @@
 @model dynamic
 
 @{
-    ViewData["Title"] = "RelatÛrio de Assinaturas";
+    ViewData["Title"] = "Relat√≥rio de Assinaturas";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">?? RelatÛrio de Assinaturas</h2>
+    <h2 class="mb-0">Relat√≥rio de Assinaturas</h2>
     <a asp-controller="Assinatura" asp-action="Create" class="btn btn-success">Nova Assinatura</a>
 </div>
 
@@ -23,7 +23,7 @@
         <div class="card text-white bg-warning">
             <div class="card-body">
                 <h5 class="card-title">Gasto Mensal</h5>
-                <h2 class="card-text">@Model.TotalMensal.ToString("C")</h2>
+                <h2 class="card-text">@Model.TotalMensal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</h2>
             </div>
         </div>
     </div>
@@ -31,7 +31,7 @@
         <div class="card text-white bg-danger">
             <div class="card-body">
                 <h5 class="card-title">Gasto Anual</h5>
-                <h2 class="card-text">@Model.TotalAnual.ToString("C")</h2>
+                <h2 class="card-text">@Model.TotalAnual.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</h2>
             </div>
         </div>
     </div>
@@ -49,12 +49,12 @@
                 <table class="table table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th>ServiÁo</th>
+                            <th>Servi√ßo</th>
                             <th>Valor Mensal</th>
                             <th>Valor Anual</th>
                             <th>Data Assinatura</th>
-                            <th>PrÛximo Vencimento</th>
-                            <th>AÁıes</th>
+                            <th>Pr√≥ximo Vencimento</th>
+                            <th>A√ß√µes</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,8 +68,8 @@
                                         <span class="badge bg-success ms-2">Ativa</span>
                                     }
                                 </td>
-                                <td>@assinatura.ValorMensal.ToString("C")</td>
-                                <td>@((assinatura.ValorMensal * 12).ToString("C"))</td>
+                                <td>@assinatura.ValorMensal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</td>
+                                <td>@((assinatura.ValorMensal * 12).ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")))</td>
                                 <td>@assinatura.DataAssinatura.ToString("dd/MM/yyyy")</td>
                                 <td>
                                     @assinatura.ProximoVencimento.ToString("dd/MM/yyyy")
@@ -93,25 +93,25 @@
         else
         {
             <div class="text-center py-5">
-                <p class="text-muted">VocÍ n„o possui assinaturas ativas no momento.</p>
+                <p class="text-muted">Voc√™ n√£o possui assinaturas ativas no momento.</p>
                 <a asp-controller="Assinatura" asp-action="Create" class="btn btn-primary">Adicionar Primeira Assinatura</a>
             </div>
         }
     </div>
 </div>
 
-<!-- An·lise de Impacto -->
+<!-- An√°lise de Impacto -->
 @if (Model.AssinaturasAtivas != null && Model.AssinaturasAtivas.Count > 0)
 {
     <div class="card">
         <div class="card-header">
-            <h5 class="mb-0">?? An·lise de Impacto</h5>
+            <h5 class="mb-0"> An√°lise de Impacto</h5>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
                     <div class="alert alert-info">
-                        <h6><i class="bi bi-info-circle"></i> DistribuiÁ„o dos Gastos</h6>
+                        <h6><i class="bi bi-info-circle"></i> Distribui√ß√£o dos Gastos</h6>
                         <ul class="mb-0">
                             @{
                                 var listaAssinaturas = new List<OrusFinancas.Models.Assinatura>();
@@ -126,7 +126,7 @@
                             @foreach (var assinatura in top3Assinaturas)
                             {
                                 var percentual = Model.TotalMensal > 0 ? (assinatura.ValorMensal / Model.TotalMensal) * 100 : 0;
-                                <li>@assinatura.Servico: @percentual.ToString("F1")% (@assinatura.ValorMensal.ToString("C"))</li>
+                                <li>@assinatura.Servico: @percentual.ToString("F1")% (@assinatura.ValorMensal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")))</li>
                             }
                         </ul>
                     </div>
@@ -135,12 +135,12 @@
                     <div class="alert alert-warning">
                         <h6><i class="bi bi-exclamation-triangle"></i> Dicas de Economia</h6>
                         <ul class="mb-0">
-                            <li>Revise assinaturas que n„o usa h· mais de 30 dias</li>
-                            <li>Compare preÁos com concorrentes anualmente</li>
+                            <li>Revise assinaturas que n√£o usa h√° mais de 30 dias</li>
+                            <li>Compare pre√ßos com concorrentes anualmente</li>
                             <li>Considere planos familiares para economia</li>
                             @if (Model.TotalMensal > 500)
                             {
-                                <li><strong>Seus gastos com assinaturas s„o altos. Avalie o que realmente precisa!</strong></li>
+                                <li><strong>Seus gastos com assinaturas s√£o altos. Avalie o que realmente precisa!</strong></li>
                             }
                         </ul>
                     </div>

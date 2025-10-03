@@ -8,7 +8,7 @@
 
 <div class="alert alert-warning">
     <i class="bi bi-exclamation-triangle"></i>
-    Tem certeza de que deseja excluir esta assinatura? Esta aÁ„o n„o pode ser desfeita.
+    Tem certeza de que deseja excluir esta assinatura? Esta a√ß√£o n√£o pode ser desfeita.
 </div>
 
 <div class="card">
@@ -16,8 +16,8 @@
         <h5 class="card-title">@Model.Servico</h5>
         <div class="row">
             <div class="col-md-6">
-                <p><strong>Valor Mensal:</strong> <span class="text-danger">@Model.ValorMensal.ToString("C")</span></p>
-                <p><strong>Data de InÌcio:</strong> @Model.DataAssinatura.ToString("dd/MM/yyyy")</p>
+                <p><strong>Valor Mensal:</strong> <span class="text-danger">@Model.ValorMensal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</span></p>
+                <p><strong>Data de In√≠cio:</strong> @Model.DataAssinatura.ToString("dd/MM/yyyy")</p>
             </div>
             <div class="col-md-6">
                 <p><strong>Status:</strong> 
@@ -32,7 +32,7 @@
                 </p>
                 @if (Model.Ativa)
                 {
-                    <p><strong>PrÛximo Vencimento:</strong> @Model.ProximoVencimento.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Pr√≥ximo Vencimento:</strong> @Model.ProximoVencimento.ToString("dd/MM/yyyy")</p>
                 }
             </div>
         </div>
@@ -42,7 +42,7 @@
 <div class="mt-3">
     <form asp-action="Delete" method="post" class="d-inline">
         <button type="submit" class="btn btn-danger">
-            <i class="bi bi-trash"></i> Confirmar Exclus„o
+            <i class="bi bi-trash"></i> Confirmar Exclus√£o
         </button>
     </form>
     <a asp-action="Index" class="btn btn-secondary">

@@ -5,16 +5,16 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0 text-danger">??? Excluir Conta</h2>
+    <h2 class="mb-0 text-danger">Excluir Conta</h2>
     <a asp-action="Index" class="btn btn-secondary">
         <i class="bi bi-arrow-left"></i> Voltar
     </a>
 </div>
 
 <div class="alert alert-danger">
-    <h5><i class="bi bi-exclamation-triangle"></i> Atenção!</h5>
+    <h5><i class="bi bi-exclamation-triangle"></i> AtenÃ§Ã£o!</h5>
     <p class="mb-0">
-        Você está prestes a excluir permanentemente esta conta. Esta ação não pode ser desfeita.
+        VocÃª estÃ¡ prestes a excluir permanentemente esta conta. Esta aÃ§Ã£o nÃ£o pode ser desfeita.
     </p>
 </div>
 
@@ -22,7 +22,7 @@
     <div class="col-md-8">
         <div class="card border-danger">
             <div class="card-header bg-danger text-white">
-                <h5 class="mb-0">Confirmar Exclusão</h5>
+                <h5 class="mb-0">Confirmar ExclusÃ£o</h5>
             </div>
             <div class="card-body">
                 <h5>Tem certeza de que deseja excluir esta conta?</h5>
@@ -42,12 +42,12 @@
                             </dd>
                             
                             <dt class="col-sm-5">Saldo Inicial:</dt>
-                            <dd class="col-sm-7">@Model.SaldoInicial.ToString("C")</dd>
+                            <dd class="col-sm-7">@Model.SaldoInicial.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</dd>
                             
                             <dt class="col-sm-5">Saldo Atual:</dt>
                             <dd class="col-sm-7">
                                 <span class="@(Model.SaldoAtual >= 0 ? "text-success" : "text-danger") fw-bold">
-                                    @Model.SaldoAtual.ToString("C")
+                                    @Model.SaldoAtual.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
                                 </span>
                             </dd>
                         </dl>
@@ -74,25 +74,25 @@
     <div class="col-md-4">
         <div class="card border-warning">
             <div class="card-header bg-warning text-dark">
-                <h6 class="mb-0">?? Consequências da Exclusão</h6>
+                <h6 class="mb-0">ConsequÃªncias da ExclusÃ£o</h6>
             </div>
             <div class="card-body">
                 <ul class="list-unstyled mb-0">
                     <li class="mb-3">
                         <i class="bi bi-exclamation-triangle text-warning me-2"></i>
-                        <small><strong>Transações:</strong> Todas as transações associadas a esta conta podem ser afetadas</small>
+                        <small><strong>TransaÃ§Ãµes:</strong> Todas as transaÃ§Ãµes associadas a esta conta podem ser afetadas</small>
                     </li>
                     <li class="mb-3">
                         <i class="bi bi-arrow-repeat text-info me-2"></i>
-                        <small><strong>Assinaturas:</strong> Assinaturas vinculadas a esta conta precisarão ser reconfiguradas</small>
+                        <small><strong>Assinaturas:</strong> Assinaturas vinculadas a esta conta precisarÃ£o ser reconfiguradas</small>
                     </li>
                     <li class="mb-3">
                         <i class="bi bi-graph-down text-danger me-2"></i>
-                        <small><strong>Relatórios:</strong> Dados históricos desta conta serão perdidos</small>
+                        <small><strong>RelatÃ³rios:</strong> Dados histÃ³ricos desta conta serÃ£o perdidos</small>
                     </li>
                     <li>
                         <i class="bi bi-shield-x text-danger me-2"></i>
-                        <small><strong>Irreversível:</strong> Esta ação não pode ser desfeita</small>
+                        <small><strong>IrreversÃ­vel:</strong> Esta aÃ§Ã£o nÃ£o pode ser desfeita</small>
                     </li>
                 </ul>
             </div>
@@ -103,8 +103,8 @@
             <div class="alert alert-warning mt-3">
                 <h6 class="alert-heading">Saldo Pendente</h6>
                 <p class="mb-0">
-                    Esta conta possui um saldo de <strong>@Model.SaldoAtual.ToString("C")</strong>.
-                    Considere transferir ou registrar transações antes de excluir.
+                    Esta conta possui um saldo de <strong>@Model.SaldoAtual.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</strong>.
+                    Considere transferir ou registrar transaÃ§Ãµes antes de excluir.
                 </p>
             </div>
         }
@@ -112,7 +112,7 @@
         <div class="mt-3">
             <p class="text-muted small">
                 <i class="bi bi-lightbulb me-1"></i>
-                <strong>Dica:</strong> Se você não usa mais esta conta, considere apenas não usá-la em novas transações em vez de excluí-la.
+                <strong>Dica:</strong> Se vocÃª nÃ£o usa mais esta conta, considere apenas nÃ£o usÃ¡-la em novas transaÃ§Ãµes em vez de excluÃ­-la.
             </p>
         </div>
     </div>

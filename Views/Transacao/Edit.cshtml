@@ -1,10 +1,10 @@
 @model OrusFinancas.Models.ViewModels.TransacaoViewModel
 
 @{
-    ViewData["Title"] = "Editar TransaÁ„o";
+    ViewData["Title"] = "Editar Transa√ß√£o";
 }
 
-<h1>Editar TransaÁ„o</h1>
+<h1>Editar Transa√ß√£o</h1>
 
 <div class="row">
     <div class="col-md-8">
@@ -19,7 +19,7 @@
                     <select asp-for="TipoTransacao" class="form-select" asp-items="Html.GetEnumSelectList<OrusFinancas.Models.ViewModels.TipoTransacao>()" disabled>
                     </select>
                     <input type="hidden" asp-for="TipoTransacao" />
-                    <small class="form-text text-muted">O tipo da transaÁ„o n„o pode ser alterado</small>
+                    <small class="form-text text-muted">O tipo da transa√ß√£o n√£o pode ser alterado</small>
                 </div>
                 
                 <div class="col-md-6 mb-3">
@@ -30,7 +30,7 @@
             </div>
             
             <div class="mb-3">
-                <label asp-for="Descricao" class="form-label">DescriÁ„o *</label>
+                <label asp-for="Descricao" class="form-label">Descri√ß√£o *</label>
                 <input asp-for="Descricao" class="form-control" />
                 <span asp-validation-for="Descricao" class="text-danger"></span>
             </div>
@@ -40,7 +40,7 @@
                     <label asp-for="Valor" class="form-label">Valor *</label>
                     <div class="input-group">
                         <span class="input-group-text">R$</span>
-                        <input asp-for="Valor" class="form-control" step="0.01" />
+                        <input asp-for="Valor" class="form-control money" type="text" placeholder="0,00" />
                     </div>
                     <span asp-validation-for="Valor" class="text-danger"></span>
                 </div>
@@ -57,7 +57,7 @@
                 </div>
             </div>
             
-            <!-- Campos especÌficos para receita -->
+            <!-- Campos espec√≠ficos para receita -->
             @if (Model.TipoTransacao == OrusFinancas.Models.ViewModels.TipoTransacao.Receita)
             {
                 <div class="row">
@@ -71,7 +71,7 @@
                 </div>
             }
             
-            <!-- Campos especÌficos para despesa -->
+            <!-- Campos espec√≠ficos para despesa -->
             @if (Model.TipoTransacao == OrusFinancas.Models.ViewModels.TipoTransacao.Despesa)
             {
                 <div class="row">
@@ -93,7 +93,7 @@
                             <option value="">Nenhuma assinatura</option>
                             @foreach (var assinatura in Model.Assinaturas)
                             {
-                                <option value="@assinatura.Id" selected="@(assinatura.Id == Model.AssinaturaId)">@assinatura.Servico - @assinatura.ValorMensal.ToString("C")</option>
+                                <option value="@assinatura.Id" selected="@(assinatura.Id == Model.AssinaturaId)">@assinatura.Servico - @assinatura.ValorMensal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</option>
                             }
                         </select>
                     </div>
@@ -102,7 +102,7 @@
             
             <div class="form-group">
                 <button type="submit" class="btn btn-success">
-                    <i class="bi bi-save"></i> Salvar AlteraÁıes
+                    <i class="bi bi-save"></i> Salvar Altera√ß√µes
                 </button>
                 <a asp-action="Index" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Voltar
@@ -114,21 +114,21 @@
     <div class="col-md-4">
         <div class="card bg-light">
             <div class="card-body">
-                <h6 class="card-title">?? Dicas</h6>
+                <h6 class="card-title">Dicas</h6>
                 @if (Model.TipoTransacao == OrusFinancas.Models.ViewModels.TipoTransacao.Receita)
                 {
                     <ul class="list-unstyled small">
-                        <li>?? <strong>Receitas:</strong> N„o precisam de categoria</li>
-                        <li>?? Use o tipo certo: Sal·rio, Freelance, Investimentos, etc.</li>
-                        <li>?? Seja especÌfico na descriÁ„o</li>
+                        <li> <strong>Receitas:</strong> N√£o precisam de categoria</li>
+                        <li> Use o tipo certo: Sal√°rio, Freelance, Investimentos, etc.</li>
+                        <li> Seja espec√≠fico na descri√ß√£o</li>
                     </ul>
                 }
                 else
                 {
                     <ul class="list-unstyled small">
-                        <li>?? <strong>Despesas:</strong> Categoria È obrigatÛria</li>
-                        <li>?? Associe a assinaturas recorrentes quando aplic·vel</li>
-                        <li>?? Use categorias para organizar melhor</li>
+                        <li> <strong>Despesas:</strong> Categoria √© obrigat√≥ria</li>
+                        <li> Associe a assinaturas recorrentes quando aplic√°vel</li>
+                        <li> Use categorias para organizar melhor</li>
                     </ul>
                 }
             </div>

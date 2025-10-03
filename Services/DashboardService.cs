@@ -1,10 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using OrusFinancas.Models;
 using OrusFinancas.Models.ViewModels;
 using OrusFinancas.ViewModels;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace OrusFinancas.Services
 {
@@ -21,44 +23,43 @@ namespace OrusFinancas.Services
             _logger = logger;
         }
 
-        public async Task<HomeDashboardViewModel> GetDashboardDataAsync(int userId)
+    public async Task<HomeDashboardViewModel> GetDashboardDataAsync(int userId)
         {
             try
             {
-                _logger.LogInformation("Iniciando carregamento de dashboard para usu·rio {UserId}", userId);
+                _logger.LogInformation("Iniciando carregamento de dashboard para usu√°rio {UserId}", userId);
                 
                 var mesAtual = DateTime.Today.Month;
                 var anoAtual = DateTime.Today.Year;
                 
                 var model = new HomeDashboardViewModel();
-
-                // Verificar se È um usu·rio novo
+        // Verificar se √© um usu√°rio novo
                 var isNewUser = await IsNewUserAsync(userId);
-                _logger.LogInformation("Usu·rio {UserId} È novo: {IsNew}", userId, isNewUser);
+                _logger.LogInformation("Usu√°rio {UserId} √© novo: {IsNew}", userId, isNewUser);
 
-                // 1. C¡LCULO DE BALAN«O - Usando consultas mais simples
+                // 1. C√ÅLCULO DE BALAN√áO - Usando consultas mais simples
                 await CarregarResumoFinanceiroAsync(model, userId, mesAtual, anoAtual, isNewUser);
                 
-                // 2. PR”XIMAS ASSINATURAS
+                // 2. PR√ìXIMAS ASSINATURAS
                 await CarregarProximasAssinaturasAsync(model, userId);
 
                 // 3. INSIGHTS
                 await CarregarInsightAsync(model, userId, isNewUser);
 
-                // 4. OR«AMENTOS
+                // 4. OR√áAMENTOS
                 await CarregarOrcamentosAsync(model, userId, mesAtual, anoAtual);
                 
-                _logger.LogInformation("Dashboard carregado com sucesso para usu·rio {UserId}", userId);
+                _logger.LogInformation("Dashboard carregado com sucesso para usu√°rio {UserId}", userId);
                 return model;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao carregar dashboard para usu·rio {UserId}", userId);
+                _logger.LogError(ex, "Erro ao carregar dashboard para usu√°rio {UserId}", userId);
                 
-                // Retornar um modelo b·sico em caso de erro
+                // Retornar um modelo b√°sico em caso de erro
                 return new HomeDashboardViewModel
                 {
-                    InsightDiario = "Ocorreu um erro ao carregar os dados. Verifique sua conex„o e tente novamente.",
+                    InsightDiario = "Ocorreu um erro ao carregar os dados. Verifique sua conex√£o e tente novamente.",
                     ProximasAssinaturas = new List<Assinatura>(),
                     Orcamentos = new List<OrcamentoDashboardItemViewModel>()
                 };
@@ -77,7 +78,7 @@ namespace OrusFinancas.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao verificar se usu·rio {UserId} È novo", userId);
+                _logger.LogError(ex, "Erro ao verificar se usu√°rio {UserId} √© novo", userId);
                 return false;
             }
         }
@@ -86,7 +87,7 @@ namespace OrusFinancas.Services
         {
             try
             {
-                // Buscar contas do usu·rio primeiro
+                // Buscar contas do usu√°rio primeiro
                 var contasIds = await _contexto.Contas
                     .Where(c => c.UsuarioId == userId)
                     .Select(c => c.Id)
@@ -97,7 +98,7 @@ namespace OrusFinancas.Services
                     model.ReceitasTotal = 0;
                     model.DespesasTotal = 0;
                     model.BalancoTotal = 0;
-                    model.MaiorDespesaDescricao = isNewUser ? "Crie sua primeira conta para comeÁar!" : "Nenhuma conta cadastrada";
+                    model.MaiorDespesaDescricao = isNewUser ? "Crie sua primeira conta para come√ßar!" : "Nenhuma conta cadastrada";
                     model.MaiorDespesaValor = 0;
                     return;
                 }
@@ -128,14 +129,14 @@ namespace OrusFinancas.Services
                 model.DespesasTotal = despesas;
                 model.BalancoTotal = receitas - despesas;
                 model.MaiorDespesaDescricao = maiorDespesa?.Descricao ?? 
-                    (isNewUser ? "Adicione sua primeira transaÁ„o!" : "Nenhuma despesa registrada este mÍs");
+                    (isNewUser ? "Adicione sua primeira transa√ß√£o!" : "Nenhuma despesa registrada este m√™s");
                 model.MaiorDespesaValor = maiorDespesa?.Valor ?? 0m;
 
                 _logger.LogInformation("Resumo financeiro carregado: Receitas={Receitas}, Despesas={Despesas}", receitas, despesas);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao carregar resumo financeiro para usu·rio {UserId}", userId);
+                _logger.LogError(ex, "Erro ao carregar resumo financeiro para usu√°rio {UserId}", userId);
                 model.ReceitasTotal = 0;
                 model.DespesasTotal = 0;
                 model.BalancoTotal = 0;
@@ -155,11 +156,11 @@ namespace OrusFinancas.Services
                     .ToListAsync();
 
                 model.ProximasAssinaturas = proximasAssinaturas;
-                _logger.LogInformation("Carregadas {Count} assinaturas prÛximas", proximasAssinaturas.Count);
+                _logger.LogInformation("Carregadas {Count} assinaturas pr√≥ximas", proximasAssinaturas.Count);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao carregar prÛximas assinaturas para usu·rio {UserId}", userId);
+                _logger.LogError(ex, "Erro ao carregar pr√≥ximas assinaturas para usu√°rio {UserId}", userId);
                 model.ProximasAssinaturas = new List<Assinatura>();
             }
         }
@@ -170,7 +171,7 @@ namespace OrusFinancas.Services
             {
                 if (isNewUser)
                 {
-                    model.InsightDiario = "?? Bem-vindo ao ”rus FinanÁas! Comece criando uma conta e registrando suas primeiras transaÁıes para receber insights personalizados.";
+                    model.InsightDiario = "Bem-vindo ao Orus Finan√ßas! Comece criando uma conta e registrando suas primeiras transa√ß√µes para receber insights personalizados.";
                     return;
                 }
 
@@ -183,16 +184,16 @@ namespace OrusFinancas.Services
                 {
                     if (insightRecente.DataGeracao.Date == DateTime.Today)
                     {
-                        model.InsightDiario = $"?? {insightRecente.Detalhe}";
+                        model.InsightDiario = $"{insightRecente.Detalhe}";
                     }
                     else
                     {
-                        model.InsightDiario = $"?? ⁄ltimo insight ({insightRecente.DataGeracao:dd/MM}): {insightRecente.Detalhe}";
+                        model.InsightDiario = $"√öltimo insight ({insightRecente.DataGeracao:dd/MM}): {insightRecente.Detalhe}";
                     }
                 }
                 else
                 {
-                    // Verificar se h· dados suficientes
+                    // Verificar se h√° dados suficientes
                     var contasIds = await _contexto.Contas
                         .Where(c => c.UsuarioId == userId)
                         .Select(c => c.Id)
@@ -203,18 +204,18 @@ namespace OrusFinancas.Services
 
                     if (temDados)
                     {
-                        model.InsightDiario = "?? Clique em 'Gerar Novo Insight' para receber dicas personalizadas baseadas em suas transaÁıes!";
+                        model.InsightDiario = "Clique em 'Gerar Novo Insight' para receber dicas personalizadas baseadas em suas transa√ß√µes!";
                     }
                     else
                     {
-                        model.InsightDiario = "?? Adicione mais transaÁıes para receber insights inteligentes sobre seus h·bitos financeiros.";
+                        model.InsightDiario = "Adicione mais transa√ß√µes para receber insights inteligentes sobre seus h√°bitos financeiros.";
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao carregar insight para usu·rio {UserId}", userId);
-                model.InsightDiario = "?? Sistema de insights temporariamente indisponÌvel.";
+                _logger.LogError(ex, "Erro ao carregar insight para usu√°rio {UserId}", userId);
+                model.InsightDiario = "Sistema de insights temporariamente indispon√≠vel.";
             }
         }
 
@@ -228,7 +229,7 @@ namespace OrusFinancas.Services
 
                 if (!orcamentos.Any())
                 {
-                    // Verificar se deve criar orÁamentos padr„o
+                    // Verificar se deve criar or√ßamentos padr√£o
                     var contasIds = await _contexto.Contas
                         .Where(c => c.UsuarioId == userId)
                         .Select(c => c.Id)
@@ -248,7 +249,7 @@ namespace OrusFinancas.Services
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, "Erro ao criar orÁamentos padr„o para usu·rio {UserId}", userId);
+                            _logger.LogError(ex, "Erro ao criar or√ßamentos padr√£o para usu√°rio {UserId}", userId);
                         }
                     }
                 }
@@ -270,11 +271,11 @@ namespace OrusFinancas.Services
                 model.Orcamentos = orcamentosViewModel.OrderByDescending(o => 
                     o.Limite > 0 ? o.Gasto / o.Limite : 0).ToList();
 
-                _logger.LogInformation("Carregados {Count} orÁamentos", orcamentosViewModel.Count);
+                _logger.LogInformation("Carregados {Count} or√ßamentos", orcamentosViewModel.Count);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao carregar orÁamentos para usu·rio {UserId}", userId);
+                _logger.LogError(ex, "Erro ao carregar or√ßamentos para usu√°rio {UserId}", userId);
                 model.Orcamentos = new List<OrcamentoDashboardItemViewModel>();
             }
         }
@@ -303,12 +304,12 @@ namespace OrusFinancas.Services
 
                 if (gastoCategoria > 0) return gastoCategoria;
 
-                // Buscar por palavras-chave na descriÁ„o
+                // Buscar por palavras-chave na descri√ß√£o
                 return await CalcularGastoPorPalavrasChave(userId, nomeOrcamento, mes, ano, contasIds);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao calcular gasto do orÁamento {Orcamento}", nomeOrcamento);
+                _logger.LogError(ex, "Erro ao calcular gasto do or√ßamento {Orcamento}", nomeOrcamento);
                 return 0m;
             }
         }
@@ -317,11 +318,11 @@ namespace OrusFinancas.Services
         {
             var palavrasChave = new Dictionary<string, string[]>
             {
-                { "alimentaÁ„o", new[] { "alimentaÁ„o", "comida", "supermercado", "restaurante", "delivery", "ifood" } },
-                { "transporte", new[] { "transporte", "combustÌvel", "gasolina", "uber", "taxi", "Ùnibus", "metro" } },
-                { "lazer", new[] { "lazer", "entretenimento", "cinema", "divers„o", "streaming", "jogo" } },
+                { "alimenta√ß√£o", new[] { "alimenta√ß√£o", "comida", "supermercado", "restaurante", "delivery", "ifood" } },
+                { "transporte", new[] { "transporte", "combust√≠vel", "gasolina", "uber", "taxi", "√¥nibus", "metro" } },
+                { "lazer", new[] { "lazer", "entretenimento", "cinema", "divers√£o", "streaming", "jogo" } },
                 { "assinatura", new[] { "assinatura", "netflix", "spotify", "amazon", "mensalidade" } },
-                { "sa˙de", new[] { "sa˙de", "mÈdico", "farm·cia", "hospital", "consulta", "remÈdio", "plano" } }
+                { "sa√∫de", new[] { "sa√∫de", "m√©dico", "farm√°cia", "hospital", "consulta", "rem√©dio", "plano" } }
             };
 
             var chaves = palavrasChave
@@ -377,7 +378,7 @@ namespace OrusFinancas.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao obter estatÌsticas para usu·rio {UserId}", userId);
+                _logger.LogError(ex, "Erro ao obter estat√≠sticas para usu√°rio {UserId}", userId);
                 return new DashboardStatsViewModel();
             }
         }
@@ -393,7 +394,7 @@ namespace OrusFinancas.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao verificar setup inicial para usu·rio {UserId}", userId);
+                _logger.LogError(ex, "Erro ao verificar setup inicial para usu√°rio {UserId}", userId);
                 return false;
             }
         }

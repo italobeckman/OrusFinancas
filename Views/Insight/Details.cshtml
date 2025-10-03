@@ -5,7 +5,7 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">?? @Model.Titulo</h2>
+    <h2 class="mb-0"> @Model.Titulo</h2>
     <a asp-action="Index" class="btn btn-secondary">
         <i class="bi bi-arrow-left"></i> Voltar
     </a>
@@ -37,7 +37,7 @@
                     <p class="text-muted">
                         <i class="bi bi-calendar"></i> Gerado em<br>
                         <strong>@Model.DataGeracao.ToString("dd/MM/yyyy")</strong><br>
-                        às @Model.DataGeracao.ToString("HH:mm")
+                        Ã s @Model.DataGeracao.ToString("HH:mm")
                     </p>
                 </div>
             </div>
@@ -50,15 +50,15 @@
     <div class="alert alert-info mt-4">
         <h6><i class="bi bi-info-circle"></i> Dica sobre este insight</h6>
         <p class="mb-0">
-            Este é o insight gerado especificamente para hoje com base na análise dos seus dados financeiros mais recentes.
-            Use essas informações para tomar decisões mais conscientes sobre seus gastos e investimentos.
+            Este Ã© o insight gerado especificamente para hoje com base na anÃ¡lise dos seus dados financeiros mais recentes.
+            Use essas informaÃ§Ãµes para tomar decisÃµes mais conscientes sobre seus gastos e investimentos.
         </p>
     </div>
 }
 
 <div class="card mt-4">
     <div class="card-header">
-        <h6 class="mb-0">Ações Recomendadas</h6>
+    <h6 class="mb-0">AÃ§Ãµes Recomendadas</h6>
     </div>
     <div class="card-body">
         <div class="row">
@@ -66,12 +66,12 @@
                 <ul class="list-unstyled">
                     <li class="mb-2">
                         <a asp-controller="Transacao" asp-action="Index" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-list"></i> Ver Transações
+                            <i class="bi bi-list"></i> Ver TransaÃ§Ãµes
                         </a>
                     </li>
                     <li class="mb-2">
                         <a asp-controller="Orcamento" asp-action="Index" class="btn btn-outline-warning btn-sm">
-                            <i class="bi bi-pie-chart"></i> Verificar Orçamentos
+                            <i class="bi bi-pie-chart"></i> Verificar OrÃ§amentos
                         </a>
                     </li>
                 </ul>
@@ -80,7 +80,7 @@
                 <ul class="list-unstyled">
                     <li class="mb-2">
                         <a asp-controller="Relatorio" asp-action="GraficoGastosPorCategoria" class="btn btn-outline-info btn-sm">
-                            <i class="bi bi-graph-up"></i> Ver Relatórios
+                            <i class="bi bi-graph-up"></i> Ver RelatÃ³rios
                         </a>
                     </li>
                     <li class="mb-2">

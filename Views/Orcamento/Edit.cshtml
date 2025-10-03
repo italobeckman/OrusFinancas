@@ -1,10 +1,10 @@
 @model OrusFinancas.Models.Orcamento
 
 @{
-    ViewData["Title"] = "Editar OrÁamento";
+    ViewData["Title"] = "Editar Or√ßamento";
 }
 
-<h1>Editar OrÁamento</h1>
+<h1>Editar Or√ßamento</h1>
 
 <div class="row">
     <div class="col-md-8">
@@ -15,7 +15,7 @@
             <input type="hidden" asp-for="UsuarioId" />
             
             <div class="mb-3">
-                <label asp-for="Nome" class="form-label">Nome do OrÁamento *</label>
+                <label asp-for="Nome" class="form-label">Nome do Or√ßamento *</label>
                 <input asp-for="Nome" class="form-control" />
                 <span asp-validation-for="Nome" class="text-danger"></span>
             </div>
@@ -24,14 +24,14 @@
                 <label asp-for="ValorLimite" class="form-label">Valor Limite Mensal *</label>
                 <div class="input-group">
                     <span class="input-group-text">R$</span>
-                    <input asp-for="ValorLimite" class="form-control" step="0.01" />
+                    <input asp-for="ValorLimite" class="form-control money" type="text" placeholder="0,00" />
                 </div>
                 <span asp-validation-for="ValorLimite" class="text-danger"></span>
             </div>
             
             <div class="form-group">
                 <button type="submit" class="btn btn-success">
-                    <i class="bi bi-save"></i> Salvar AlteraÁıes
+                    <i class="bi bi-save"></i> Salvar Altera√ß√µes
                 </button>
                 <a asp-action="Index" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Voltar
@@ -43,9 +43,9 @@
     <div class="col-md-4">
         <div class="card bg-warning">
             <div class="card-body">
-                <h6 class="card-title">?? AtenÁ„o</h6>
+                <h6 class="card-title">Aten√ß√£o</h6>
                 <p class="card-text small mb-0">
-                    Alterar o valor limite afetar· os alertas e c·lculos de progresso.
+                    Alterar o valor limite afetar√° os alertas e c√°lculos de progresso.
                 </p>
             </div>
         </div>

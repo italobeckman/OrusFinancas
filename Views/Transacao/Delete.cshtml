@@ -1,14 +1,14 @@
 @model OrusFinancas.Models.Transacao
 
 @{
-    ViewData["Title"] = "Excluir TransaÁ„o";
+    ViewData["Title"] = "Excluir Transa√ß√£o";
 }
 
-<h1>Excluir TransaÁ„o</h1>
+<h1>Excluir Transa√ß√£o</h1>
 
 <div class="alert alert-warning">
     <i class="bi bi-exclamation-triangle"></i>
-    Tem certeza de que deseja excluir esta transaÁ„o? Esta aÁ„o n„o pode ser desfeita.
+    Tem certeza de que deseja excluir esta transa√ß√£o? Esta a√ß√£o n√£o pode ser desfeita.
 </div>
 
 <div class="card">
@@ -17,7 +17,7 @@
         <div class="row">
             <div class="col-md-6">
                 <p><strong>Data:</strong> @Model.DataTransacao.ToString("dd/MM/yyyy")</p>
-                <p><strong>Valor:</strong> <span class="@(Model is OrusFinancas.Models.Receita ? "text-success" : "text-danger")">@Model.Valor.ToString("C")</span></p>
+                <p><strong>Valor:</strong> <span class="@(Model is OrusFinancas.Models.Receita ? "text-success" : "text-danger")">@Model.Valor.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</span></p>
                 <p><strong>Tipo:</strong> 
                     @if (Model is OrusFinancas.Models.Receita)
                     {
@@ -44,7 +44,7 @@
 <div class="mt-3">
     <form asp-action="Delete" method="post" class="d-inline">
         <button type="submit" class="btn btn-danger">
-            <i class="bi bi-trash"></i> Confirmar Exclus„o
+            <i class="bi bi-trash"></i> Confirmar Exclus√£o
         </button>
     </form>
     <a asp-action="Index" class="btn btn-secondary">

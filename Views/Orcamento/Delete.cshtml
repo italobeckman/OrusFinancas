@@ -1,14 +1,14 @@
 @model OrusFinancas.Models.Orcamento
 
 @{
-    ViewData["Title"] = "Excluir OrÁamento";
+    ViewData["Title"] = "Excluir Or√ßamento";
 }
 
-<h1>Excluir OrÁamento</h1>
+<h1>Excluir Or√ßamento</h1>
 
 <div class="alert alert-warning">
     <i class="bi bi-exclamation-triangle"></i>
-    Tem certeza de que deseja excluir este orÁamento? Esta aÁ„o n„o pode ser desfeita.
+    Tem certeza de que deseja excluir este or√ßamento? Esta a√ß√£o n√£o pode ser desfeita.
 </div>
 
 <div class="card">
@@ -16,7 +16,7 @@
         <h5 class="card-title">@Model.Nome</h5>
         <div class="row">
             <div class="col-md-6">
-                <p><strong>Valor Limite:</strong> <span class="text-success">@Model.ValorLimite.ToString("C")</span></p>
+                <p><strong>Valor Limite:</strong> <span class="text-success">@Model.ValorLimite.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</span></p>
             </div>
             <div class="col-md-6">
                 <p><strong>ID:</strong> @Model.Id</p>
@@ -28,7 +28,7 @@
 <div class="mt-3">
     <form asp-action="Delete" method="post" class="d-inline">
         <button type="submit" class="btn btn-danger">
-            <i class="bi bi-trash"></i> Confirmar Exclus„o
+            <i class="bi bi-trash"></i> Confirmar Exclus√£o
         </button>
     </form>
     <a asp-action="Index" class="btn btn-secondary">

@@ -78,7 +78,6 @@ namespace OrusFinancas.Controllers
             var usuarioId = GetCurrentUserId();
             assinatura.UsuarioId = usuarioId;
 
-            // Remove campos que não vêm do formulário
             ModelState.Remove("Usuario");
             ModelState.Remove("Conta");
             ModelState.Remove("TransacoesGeradas");
@@ -130,7 +129,6 @@ namespace OrusFinancas.Controllers
             var usuarioId = GetCurrentUserId();
             assinatura.UsuarioId = usuarioId;
 
-            // Remove campos que não vêm do formulário
             ModelState.Remove("Usuario");
             ModelState.Remove("Conta");
             ModelState.Remove("TransacoesGeradas");
@@ -190,7 +188,7 @@ namespace OrusFinancas.Controllers
             {
                 _contexto.Assinaturas.Remove(assinatura);
                 await _contexto.SaveChangesAsync();
-                TempData["Success"] = "Assinatura excluída com sucesso!";
+                TempData["Success"] = "Assinatura excluida com sucesso!";
             }
             
             return RedirectToAction(nameof(Index));
@@ -222,6 +220,8 @@ namespace OrusFinancas.Controllers
         public async Task<IActionResult> GerarDespesa(int id)
         {
             var usuarioId = GetCurrentUserId();
+            
+            // Validação de segurança: verificar se a assinatura pertence ao usuário
             var assinatura = await _contexto.Assinaturas
                 .Where(a => a.Id == id && a.UsuarioId == usuarioId && a.Ativa)
                 .FirstOrDefaultAsync();
@@ -231,8 +231,19 @@ namespace OrusFinancas.Controllers
                 TempData["Error"] = "Assinatura não encontrada ou inativa.";
                 return RedirectToAction(nameof(Index));
             }
+            
+            // Verificar se o usuário tem pelo menos uma conta cadastrada
+            var temConta = await _contexto.Contas
+                .AnyAsync(c => c.UsuarioId == usuarioId);
+            
+            if (!temConta)
+            {
+                TempData["Error"] = "Você precisa cadastrar pelo menos uma conta antes de gerar despesas.";
+                return RedirectToAction(nameof(Index));
+            }
 
-            var sucesso = await _assinaturaService.GerarDespesaAssinatura(id);
+            // Passar o usuarioId para o service para validação adicional
+            var sucesso = await _assinaturaService.GerarDespesaAssinatura(id, usuarioId);
             
             if (sucesso)
             {

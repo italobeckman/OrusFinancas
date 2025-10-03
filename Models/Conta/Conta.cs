@@ -10,30 +10,53 @@ namespace OrusFinancas.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "O nome é obrigatório.")]
-        public Bancos NomeBanco { get; set; }// Nome ou Instituição (ex: NuBank, Banco do Brasil)
+        [Display(Name = "Banco/Instituição")]
+        public Bancos NomeBanco { get; set; }
 
+        /// <summary>
+        /// Saldo com que a conta foi aberta no sistema.
+        /// Este valor é usado apenas como referência histórica e NÃO deve ser alterado após a criação.
+        /// Serve para calcular a variação financeira desde a criação da conta.
+        /// </summary>
         [Required(ErrorMessage = "O saldo inicial é obrigatório.")]
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal SaldoInicial { get; set; } // O saldo com que a conta foi aberta
+        [Display(Name = "Saldo ao Cadastrar")]
+        public decimal SaldoInicial { get; set; }
 
-        // Campo para o Requisito: Identifica o tipo de conta (Corrente, Cartão, Carteira)
         [Required(ErrorMessage = "O tipo da conta é obrigatório.")]
+        [Display(Name = "Tipo de Conta")]
         public TipoConta Tipo { get; set; }
 
-        // O SaldoAtual deve ser calculado: SaldoInicial + (Total Receitas) - (Total Despesas)
-        // Por isso, ele não deve ser persistido.
-        [NotMapped] // <-- Use [NotMapped] para um campo que é calculado e não vai para o DB
-        public decimal SaldoAtual { get; set; } 
+        /// <summary>
+        /// Saldo atual calculado dinamicamente: Soma de TODAS as transações (Receitas - Despesas).
+        /// NÃO usa o SaldoInicial no cálculo, apenas as transações registradas no sistema.
+        /// </summary>
+        [NotMapped]
+        [Display(Name = "Saldo Atual")]
+        public decimal SaldoAtual { get; set; }
+
+        /// <summary>
+        /// Variação total desde a criação da conta (SaldoAtual - SaldoInicial).
+        /// Mostra o quanto a conta cresceu ou diminuiu desde que foi cadastrada.
+        /// </summary>
+        [NotMapped]
+        [Display(Name = "Variação Total")]
+        public decimal VariacaoTotal => SaldoAtual - SaldoInicial;
+
+        /// <summary>
+        /// Indica se a conta teve evolução positiva desde a criação
+        /// </summary>
+        [NotMapped]
+        public bool TemCrescimento => VariacaoTotal > 0;
 
         // Relacionamento com Usuário (1:N)
         public int UsuarioId { get; set; }
-        [Required] // Toda Conta deve ter um Usuário
-        public Usuario Usuario { get; set; } = default!; // Mudança: Deve ser não-nullable se a FK for obrigatória
+        [Required]
+        public Usuario Usuario { get; set; } = default!;
 
         // Propriedades de Navegação
         public ICollection<Transacao> Transacoes { get; set; } = new List<Transacao>();
         public ICollection<Assinatura> Assinaturas { get; set; } = new List<Assinatura>();
-
     }
 
     // Enum para o Requisito: Tipos de Conta

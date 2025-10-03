@@ -46,7 +46,7 @@ namespace OrusFinancas.Controllers
         {
             var usuarioId = GetCurrentUserId();
             
-            // Criar categorias básicas se o usuário não tiver nenhuma
+            // Criar categorias bÃ¡sicas se o usuÃ¡rio nÃ£o tiver nenhuma
             await _seedDataService.CriarCategoriasBasicasAsync(usuarioId);
             
             var viewModel = new TransacaoViewModel
@@ -54,7 +54,7 @@ namespace OrusFinancas.Controllers
                 Contas = await _contexto.Contas.Where(c => c.Usuario.Id == usuarioId).ToListAsync(),
                 Categorias = await _contexto.Categorias
                     .Where(c => c.UsuarioId == usuarioId)
-                    .ToListAsync(), // Garante que só traz categorias do usuário logado
+                    .ToListAsync(), // Garante que sÃ³ traz categorias do usuÃ¡rio logado
                 Assinaturas = await _contexto.Assinaturas.Where(a => a.UsuarioId == usuarioId && a.Ativa).ToListAsync()
             };
             
@@ -68,35 +68,36 @@ namespace OrusFinancas.Controllers
         {
             var usuarioId = GetCurrentUserId();
 
-            // Validações customizadas (manter o que já existe)
+            // ValidaÃ§Ãµes customizadas (manter o que jÃ¡ existe)
             if (viewModel.TipoTransacao == TipoTransacao.Despesa && !viewModel.CategoriaId.HasValue)
             {
-                ModelState.AddModelError(nameof(viewModel.CategoriaId), "Categoria é obrigatória para despesas.");
+                ModelState.AddModelError(nameof(viewModel.CategoriaId), "Categoria Ã© obrigatÃ³ria para despesas.");
             }
 
             if (viewModel.TipoTransacao == TipoTransacao.Receita && !viewModel.TipoReceita.HasValue)
             {
-                ModelState.AddModelError(nameof(viewModel.TipoReceita), "Tipo de receita é obrigatório.");
+                ModelState.AddModelError(nameof(viewModel.TipoReceita), "Tipo de receita Ã© obrigatÃ³rio.");
             }
 
-            // Validação e carregamento da conta
-            // CRÍTICO: Carregue a entidade Conta para garantir que ela seja rastreada
+            // ValidaÃ§Ã£o e carregamento da conta
+            // CRÃTICO: Carregue a entidade Conta para garantir que ela seja rastreada
             var conta = await _contexto.Contas.Where(c => c.Id == viewModel.ContaId && c.Usuario.Id == usuarioId).FirstOrDefaultAsync();
             if (conta == null)
             {
-                ModelState.AddModelError(nameof(viewModel.ContaId), "Conta inválida para este usuário.");
+                ModelState.AddModelError(nameof(viewModel.ContaId), "Conta invÃ¡lida para este usuÃ¡rio.");
             }
 
             if (ModelState.IsValid)
             {
                 Transacao transacao;
 
+
                 if (viewModel.TipoTransacao == TipoTransacao.Receita)
                 {
                     transacao = new Receita
                     {
                         TipoReceita = viewModel.TipoReceita ?? TipoReceita.Outras,
-                        CategoriaId = null, // Receitas não têm categoria
+                        CategoriaId = null, // Receitas nÃ£o tÃªm categoria
                         AssinaturaId = null // nem assinatura
                     };
                 }
@@ -112,8 +113,8 @@ namespace OrusFinancas.Controllers
                 transacao.Valor = viewModel.Valor;
                 transacao.DataTransacao = viewModel.DataTransacao;
 
-                // A MUDANÇA MAIS IMPORTANTE:
-                // Atribua a entidade Conta carregada à propriedade de navegação.
+                // A MUDANÃ‡A MAIS IMPORTANTE:
+                // Atribua a entidade Conta carregada Ã  propriedade de navegaÃ§Ã£o.
                 // Isso instrui o EF Core a usar a Conta existente.
                 transacao.Conta = conta;
 
@@ -126,7 +127,7 @@ namespace OrusFinancas.Controllers
 
             // Recarregar listas se houver erro
             viewModel.Contas = await _contexto.Contas.Where(c => c.Usuario.Id == usuarioId).ToListAsync();
-            // Atenção: Seu código tem duas chamadas `.Where()` para categorias, o que é um erro.
+            // AtenÃ§Ã£o: Seu cÃ³digo tem duas chamadas `.Where()` para categorias, o que Ã© um erro.
             // Mantenha apenas uma chamada.
             viewModel.Categorias = await _contexto.Categorias
                 .Where(c => c.UsuarioId == usuarioId && c.TipoCategoria == TipoCategoria.Despesa)
@@ -184,15 +185,15 @@ namespace OrusFinancas.Controllers
 
             var usuarioId = GetCurrentUserId();
             
-            // Validações customizadas
+            // ValidaÃ§Ãµes customizadas
             if (viewModel.TipoTransacao == TipoTransacao.Despesa && !viewModel.CategoriaId.HasValue)
             {
-                ModelState.AddModelError(nameof(viewModel.CategoriaId), "Categoria é obrigatória para despesas.");
+                ModelState.AddModelError(nameof(viewModel.CategoriaId), "Categoria Ã© obrigatÃ³ria para despesas.");
             }
             
             if (viewModel.TipoTransacao == TipoTransacao.Receita && !viewModel.TipoReceita.HasValue)
             {
-                ModelState.AddModelError(nameof(viewModel.TipoReceita), "Tipo de receita é obrigatório.");
+                ModelState.AddModelError(nameof(viewModel.TipoReceita), "Tipo de receita Ã© obrigatÃ³rio.");
             }
 
             if (ModelState.IsValid)
@@ -209,7 +210,7 @@ namespace OrusFinancas.Controllers
                 transacao.DataTransacao = viewModel.DataTransacao;
                 transacao.ContaId = viewModel.ContaId;
 
-                // Atualizar campos específicos
+                // Atualizar campos especÃ­ficos
                 if (transacao is Receita receita)
                 {
                     receita.TipoReceita = viewModel.TipoReceita ?? TipoReceita.Outras;
@@ -226,7 +227,7 @@ namespace OrusFinancas.Controllers
                 {
                     _contexto.Update(transacao);
                     await _contexto.SaveChangesAsync();
-                    TempData["Success"] = "Transação atualizada com sucesso!";
+                    TempData["Success"] = "TransaÃ§Ã£o atualizada com sucesso!";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
@@ -278,7 +279,7 @@ namespace OrusFinancas.Controllers
             {
                 _contexto.Transacoes.Remove(transacao);
                 await _contexto.SaveChangesAsync();
-                TempData["Success"] = "Transação excluída com sucesso!";
+                TempData["Success"] = "TransaÃ§Ã£o excluÃ­da com sucesso!";
             }
 
             return RedirectToAction(nameof(Index));

@@ -38,28 +38,6 @@
     </div>
 }
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
-        <div class="d-flex align-items-center">
-            <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
-            <div class="flex-grow-1">
-                <h6 class="alert-heading mb-1">⚠️ Problema no Sistema</h6>
-                <p class="mb-2">@TempData["Error"]</p>
-                <div class="d-flex gap-2">
-                    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-danger btn-sm">
-                        <i class="bi bi-arrow-clockwise"></i> Tentar Novamente
-                    </a>
-                    <a href="@Url.Action("Diagnostico", "Home")" class="btn btn-outline-warning btn-sm">
-                        <i class="bi bi-tools"></i> Diagnóstico
-                    </a>
-                </div>
-            </div>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-
 <div class="row mb-5">
     <div class="col-lg-8">
         @* RESUMO FINANCEIRO MELHORADO *@
@@ -74,14 +52,14 @@
                     <div class="col-md-4 mb-3">
                         <div class="p-3 rounded" style="background-color: #e8f5e8;">
                             <i class="bi bi-arrow-up-circle-fill text-success display-6 mb-2"></i>
-                            <h3 class="text-success mb-1">@Model.ReceitasTotal.ToString("C")</h3>
+                            <h3 class="text-success mb-1">@Model.ReceitasTotal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</h3>
                             <p class="text-muted mb-0">Receitas</p>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="p-3 rounded" style="background-color: #ffeaea;">
                             <i class="bi bi-arrow-down-circle-fill text-danger display-6 mb-2"></i>
-                            <h3 class="text-danger mb-1">@Model.DespesasTotal.ToString("C")</h3>
+                            <h3 class="text-danger mb-1">@Model.DespesasTotal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</h3>
                             <p class="text-muted mb-0">Despesas</p>
                         </div>
                     </div>
@@ -89,7 +67,7 @@
                         <div class="p-3 rounded @(Model.BalancoTotal >= 0 ? "bg-light-success" : "bg-light-danger")" style="background-color: @(Model.BalancoTotal >= 0 ? "#e8f5e8" : "#ffeaea");">
                             <i class="bi bi-@(Model.BalancoTotal >= 0 ? "trophy-fill text-success" : "exclamation-triangle-fill text-danger") display-6 mb-2"></i>
                             <h3 class="@(Model.BalancoTotal >= 0 ? "text-success" : "text-danger") mb-1">
-                                @Model.BalancoTotal.ToString("C")
+                                @Model.BalancoTotal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
                             </h3>
                             <p class="text-muted mb-0 fw-bold">Saldo do Mês</p>
                         </div>
@@ -103,7 +81,7 @@
                         <i class="bi bi-info-circle-fill me-3 fs-4"></i>
                         <div>
                             <strong>Maior despesa do mês:</strong><br>
-                            <span class="text-danger fw-bold">@Model.MaiorDespesaDescricao</span> - @Model.MaiorDespesaValor.ToString("C")
+                            <span class="text-danger fw-bold">@Model.MaiorDespesaDescricao</span> - @Model.MaiorDespesaValor.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
                         </div>
                     </div>
                 }
@@ -133,38 +111,54 @@
                         var percentualUso = orcamento.Limite > 0 ? (orcamento.Gasto / orcamento.Limite * 100) : 0;
                         var progressBarClass = percentualUso < 70 ? "bg-success" : percentualUso < 90 ? "bg-warning" : "bg-danger";
                         var statusIcon = percentualUso < 70 ? "check-circle-fill text-success" : percentualUso < 90 ? "exclamation-circle-fill text-warning" : "x-circle-fill text-danger";
+                        var percentualWidth = Math.Min(percentualUso, 100);
                         
                         <div class="mb-4 p-3 border rounded">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div class="d-flex align-items-center">
-                                    <i class="bi bi-@statusIcon me-2"></i>
+                                    <i class="bi bi-@statusIcon me-2 fs-5"></i>
                                     <span class="fw-semibold">@orcamento.CategoriaNome</span>
                                 </div>
                                 <div class="text-end">
-                                    <small class="text-muted">@orcamento.Gasto.ToString("C") de @orcamento.Limite.ToString("C")</small><br>
-                                    <span class="badge @(percentualUso >= 100 ? "bg-danger" : percentualUso >= 80 ? "bg-warning" : "bg-primary")">
-                                        @percentualUso.ToString("F0")%
+                                    <small class="text-muted d-block">Gasto / Limite</small>
+                                    <small class="d-block">
+                                        <strong class="text-danger">@orcamento.Gasto.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</strong>
+                                        <span class="text-muted"> / </span>
+                                        <span>@orcamento.Limite.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</span>
+                                    </small>
+                                    <span class="badge @(percentualUso >= 100 ? "bg-danger" : percentualUso >= 80 ? "bg-warning text-dark" : "bg-primary") mt-1">
+                                        @percentualUso.ToString("F1")%
                                     </span>
                                 </div>
                             </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar @progressBarClass" role="progressbar" 
-                                     style="width: @Math.Min(percentualUso, 100)%;" 
-                                     aria-valuenow="@percentualUso" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar @progressBarClass progress-bar-striped @(percentualUso >= 90 ? "progress-bar-animated" : "")" 
+                                     role="progressbar" 
+                                     style="width: @percentualWidth.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)%;" 
+                                     aria-valuenow="@percentualUso" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
                                 </div>
                             </div>
                             @if (percentualUso >= 90)
                             {
-                                <small class="text-danger mt-1 d-block">
-                                    <i class="bi bi-exclamation-triangle"></i> 
+                                <small class="text-danger mt-2 d-block">
+                                    <i class="bi bi-exclamation-triangle-fill"></i> 
                                     @if (percentualUso >= 100)
                                     {
-                                        <span>Orçamento ultrapassado!</span>
+                                        <strong>Orçamento ultrapassado em @((percentualUso - 100).ToString("F1"))%!</strong>
                                     }
                                     else
                                     {
-                                        <span>Próximo do limite!</span>
+                                        <strong>Atenção! Você já usou @percentualUso.ToString("F1")% do orçamento.</strong>
                                     }
+                                </small>
+                            }
+                            else if (percentualUso >= 70)
+                            {
+                                <small class="text-warning mt-2 d-block">
+                                    <i class="bi bi-exclamation-circle-fill"></i> 
+                                    Restam @((orcamento.Limite - orcamento.Gasto).ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))) disponíveis
                                 </small>
                             }
                         </div>
@@ -260,7 +254,7 @@
                                         </small>
                                     </div>
                                     <div class="text-end">
-                                        <span class="text-danger fw-bold fs-6">@assinatura.ValorMensal.ToString("C")</span>
+                                        <span class="text-danger fw-bold fs-6">@assinatura.ValorMensal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</span>
                                     </div>
                                 </div>
                             </div>

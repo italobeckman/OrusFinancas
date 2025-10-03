@@ -5,49 +5,179 @@
     ViewData["Title"] = "Nova Conta";
 }
 
-
-@if (TempData["Sucesso"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <strong>Sucesso!</strong> @TempData["Sucesso"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-
-<h1>Cadastrar Nova Conta</h1>
-<hr />
+<div class="mb-4">
+    <h1 class="display-6 fw-bold text-success">
+        <i class="bi bi-wallet2-fill me-2"></i>Cadastrar Nova Conta
+    </h1>
+    <p class="text-muted">Adicione uma conta bancária, cartão de crédito ou carteira digital</p>
+</div>
 
 <div class="row">
-    <div class="col-md-6">
-        <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
-            <div class="form-group mb-3">
-                <label asp-for="NomeBanco" class="control-label"></label>
-                <select asp-for="NomeBanco" class="form-control" asp-items="Html.GetEnumSelectList<Bancos>()"></select>
-                <span asp-validation-for="NomeBanco" class="text-danger"></span>
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="NomeBanco" class="form-label fw-semibold">
+                            <i class="bi bi-bank"></i> Banco/Instituição *
+                        </label>
+                        <select asp-for="NomeBanco" class="form-select form-select-lg" asp-items="Html.GetEnumSelectList<Bancos>()">
+                            <option value="">Selecione um banco</option>
+                        </select>
+                        <span asp-validation-for="NomeBanco" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="Tipo" class="form-label fw-semibold">
+                            <i class="bi bi-credit-card"></i> Tipo de Conta *
+                        </label>
+                        <select asp-for="Tipo" class="form-select form-select-lg" asp-items="Html.GetEnumSelectList<TipoConta>()">
+                            <option value="">Selecione o tipo de conta</option>
+                        </select>
+                        <span asp-validation-for="Tipo" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="SaldoInicial" class="form-label fw-semibold">
+                            <i class="bi bi-cash-stack"></i> Saldo Inicial (Referência) *
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light">R$</span>
+                            <input asp-for="SaldoInicial" class="form-control" type="number" step="0.01" placeholder="0,00" />
+                        </div>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle"></i> 
+                            Este é apenas um valor de referência histórica. Para refletir o saldo real da conta, 
+                            <strong> registre uma receita inicial</strong> após criar a conta.
+                        </div>
+                        <span asp-validation-for="SaldoInicial" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="alert alert-info border-0">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-lightbulb-fill"></i> Como funciona?
+                        </h6>
+                        <ul class="mb-0 small">
+                            <li><strong>Saldo Inicial:</strong> Valor de referência de quanto você tinha ao criar a conta no sistema.</li>
+                            <li><strong>Saldo Atual:</strong> Será calculado automaticamente pela soma de todas as transações.</li>
+                            <li><strong>Exemplo:</strong> Se sua conta tem R$ 1.000 agora, coloque este valor como Saldo Inicial e depois registre uma receita de R$ 1.000 para começar.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle"></i> Salvar Conta
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
             </div>
-            
-            <div class="form-group mb-3">
-                <label asp-for="Tipo" class="control-label"></label>
-                <select asp-for="Tipo" class="form-control" asp-items="Html.GetEnumSelectList<TipoConta>()"></select>
-                <span asp-validation-for="Tipo" class="text-danger"></span>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card bg-light border-0 h-100">
+            <div class="card-body p-4">
+                <h5 class="card-title">
+                    <i class="bi bi-question-circle-fill text-primary"></i> Guia Rápido
+                </h5>
+                
+                <div class="accordion accordion-flush" id="helpAccordion">
+                    <div class="accordion-item bg-transparent">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#help1">
+                                <i class="bi bi-1-circle me-2"></i> Por que preciso informar o Saldo Inicial?
+                            </button>
+                        </h2>
+                        <div id="help1" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                            <div class="accordion-body">
+                                O <strong>Saldo Inicial</strong> serve como referência histórica para você acompanhar 
+                                a evolução da sua conta desde que começou a usar o sistema. Ele <strong>não é usado</strong> 
+                                nos cálculos do saldo atual.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item bg-transparent">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#help2">
+                                <i class="bi bi-2-circle me-2"></i> Como o Saldo Atual é calculado?
+                            </button>
+                        </h2>
+                        <div id="help2" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                            <div class="accordion-body">
+                                O <strong>Saldo Atual</strong> é calculado automaticamente pela fórmula:<br>
+                                <code>Saldo Atual = Total de Receitas - Total de Despesas</code><br><br>
+                                Todas as transações que você registrar nesta conta serão somadas ou subtraídas 
+                                automaticamente para calcular o saldo atual.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item bg-transparent">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#help3">
+                                <i class="bi bi-3-circle me-2"></i> Exemplo Prático
+                            </button>
+                        </h2>
+                        <div id="help3" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                            <div class="accordion-body">
+                                <strong>Situação:</strong> Você tem R$ 1.500 na sua conta Nubank.<br><br>
+                                
+                                <strong>Passo 1:</strong> Cadastre a conta com Saldo Inicial de R$ 1.500<br>
+                                <strong>Passo 2:</strong> Registre uma receita de R$ 1.500 como "Saldo Inicial da Conta"<br>
+                                <strong>Resultado:</strong> Sua conta terá:<br>
+                                • Saldo Inicial: R$ 1.500 (referência)<br>
+                                • Saldo Atual: R$ 1.500 (calculado pelas transações)<br>
+                                • Variação: R$ 0,00 (ainda não houve mudança)<br><br>
+                                
+                                A partir daí, todas as suas transações vão afetar o Saldo Atual automaticamente!
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item bg-transparent">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#help4">
+                                <i class="bi bi-4-circle me-2"></i> Posso ter Saldo Inicial zero?
+                            </button>
+                        </h2>
+                        <div id="help4" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                            <div class="accordion-body">
+                                Sim! Se você está criando uma conta nova que ainda não tem dinheiro, 
+                                pode colocar R$ 0,00 como Saldo Inicial. Conforme você registrar transações, 
+                                o saldo será calculado automaticamente.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-success border-0 mt-3 mb-0">
+                    <strong><i class="bi bi-star-fill"></i> Dica de Ouro:</strong><br>
+                    Sempre registre uma <strong>receita inicial</strong> com o valor do Saldo Inicial 
+                    para que o sistema comece a calcular corretamente desde o primeiro dia!
+                </div>
             </div>
-            
-            <div class="form-group mb-3">
-                <label asp-for="SaldoInicial" class="control-label"></label>
-                <input asp-for="SaldoInicial" class="form-control" type="number" step="0.01" /> 
-                <span asp-validation-for="SaldoInicial" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group mt-4">
-                <input type="submit" value="Salvar Conta" class="btn btn-success" />
-                <a asp-action="Index" class="btn btn-secondary">Voltar para a Lista</a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Auto-abrir o primeiro item do accordion
+        document.addEventListener('DOMContentLoaded', function() {
+            var firstAccordion = document.getElementById('help1');
+            if (firstAccordion) {
+                var bsCollapse = new bootstrap.Collapse(firstAccordion, {
+                    toggle: false
+                });
+                bsCollapse.show();
+            }
+        });
+    </script>
 }

@@ -1,10 +1,10 @@
 @model OrusFinancas.Models.ViewModels.TransacaoViewModel
 
 @{
-    ViewData["Title"] = "Nova Transação";
+    ViewData["Title"] = "Nova TransaÃ§Ã£o";
 }
 
-<h1>Nova Transação</h1>
+<h1>Nova TransaÃ§Ã£o</h1>
 
 <div class="row">
     <div class="col-md-8">
@@ -28,8 +28,8 @@
             </div>
             
             <div class="mb-3">
-                <label asp-for="Descricao" class="form-label">Descrição *</label>
-                <input asp-for="Descricao" class="form-control" placeholder="Descreva a transação..." />
+                <label asp-for="Descricao" class="form-label">DescriÃ§Ã£o *</label>
+                <input asp-for="Descricao" class="form-control" placeholder="Descreva a transaÃ§Ã£o..." />
                 <span asp-validation-for="Descricao" class="text-danger"></span>
             </div>
             
@@ -38,7 +38,7 @@
                     <label asp-for="Valor" class="form-label">Valor *</label>
                     <div class="input-group">
                         <span class="input-group-text">R$</span>
-                        <input asp-for="Valor" class="form-control" placeholder="0,00" step="0.01" />
+                        <input asp-for="Valor" class="form-control money" type="text" placeholder="0,00" />
                     </div>
                     <span asp-validation-for="Valor" class="text-danger"></span>
                 </div>
@@ -56,7 +56,7 @@
                 </div>
             </div>
             
-            <!-- Campos específicos para receita -->
+            <!-- Campos especÃ­ficos para receita -->
             <div class="row receita-fields" style="display: none;">
                 <div class="col-md-6 mb-3">
                     <label asp-for="TipoReceita" class="form-label">Tipo de Receita *</label>
@@ -67,7 +67,7 @@
                 </div>
             </div>
             
-            <!-- Campos específicos para despesa -->
+            <!-- Campos especÃ­ficos para despesa -->
             <div class="row despesa-fields" style="display: none;">
                 <div class="col-md-6 mb-3">
                     <label asp-for="CategoriaId" class="form-label">Categoria *</label>
@@ -87,7 +87,7 @@
                         <option value="">Nenhuma assinatura</option>
                         @foreach (var assinatura in Model.Assinaturas)
                         {
-                            <option value="@assinatura.Id">@assinatura.Servico - @assinatura.ValorMensal.ToString("C")</option>
+                            <option value="@assinatura.Id">@assinatura.Servico - @assinatura.ValorMensal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</option>
                         }
                     </select>
                     <span asp-validation-for="AssinaturaId" class="text-danger"></span>
@@ -96,7 +96,7 @@
             
             <div class="form-group">
                 <button type="submit" class="btn btn-success">
-                    <i class="bi bi-save"></i> Salvar Transação
+                    <i class="bi bi-save"></i> Salvar TransaÃ§Ã£o
                 </button>
                 <a asp-action="Index" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Voltar
@@ -108,26 +108,26 @@
     <div class="col-md-4">
         <div class="card bg-light">
             <div class="card-body">
-                <h6 class="card-title">?? Dicas</h6>
+                <h6 class="card-title">Dicas</h6>
                 <div class="receita-tips" style="display: none;">
                     <ul class="list-unstyled small">
-                        <li>?? <strong>Receitas:</strong> Não precisam de categoria</li>
-                        <li>?? Use o tipo certo: Salário, Freelance, Investimentos, etc.</li>
-                        <li>?? Seja específico na descrição</li>
+                        <li><strong>Receitas:</strong> NÃ£o precisam de categoria</li>
+                        <li>Use o tipo certo: SalÃ¡rio, Freelance, Investimentos, etc.</li>
+                        <li>Seja especÃ­fico na descriÃ§Ã£o</li>
                     </ul>
                 </div>
                 <div class="despesa-tips" style="display: none;">
                     <ul class="list-unstyled small">
-                        <li>?? <strong>Despesas:</strong> Categoria é obrigatória</li>
-                        <li>?? Associe a assinaturas recorrentes quando aplicável</li>
-                        <li>?? Use categorias para organizar melhor</li>
+                        <li><strong>Despesas:</strong> Categoria Ã© obrigatÃ³ria</li>
+                        <li>Associe a assinaturas recorrentes quando aplicÃ¡vel</li>
+                        <li>Use categorias para organizar melhor</li>
                     </ul>
                 </div>
                 <div class="default-tips">
                     <ul class="list-unstyled small">
-                        <li>?? <strong>Receitas:</strong> Salários, vendas, investimentos</li>
-                        <li>?? <strong>Despesas:</strong> Compras, contas, pagamentos</li>
-                        <li>?? Escolha o tipo primeiro para ver as opções</li>
+                        <li><strong>Receitas:</strong> SalÃ¡rios, vendas, investimentos</li>
+                        <li><strong>Despesas:</strong> Compras, contas, pagamentos</li>
+                        <li>Escolha o tipo primeiro para ver as opÃ§Ãµes</li>
                     </ul>
                 </div>
             </div>
@@ -137,7 +137,7 @@
         {
             <div class="alert alert-warning mt-3">
                 <i class="bi bi-exclamation-triangle"></i>
-                <strong>Atenção!</strong> Você precisa ter pelo menos uma categoria cadastrada para criar despesas.
+                <strong>AtenÃ§Ã£o!</strong> VocÃª precisa ter pelo menos uma categoria cadastrada para criar despesas.
                 <br>
                 <a asp-controller="Categoria" asp-action="Create" class="btn btn-sm btn-outline-warning mt-2">
                     Criar Categoria
@@ -149,7 +149,7 @@
         {
             <div class="alert alert-danger mt-3">
                 <i class="bi bi-exclamation-circle"></i>
-                <strong>Atenção!</strong> Você precisa ter pelo menos uma conta cadastrada.
+                <strong>AtenÃ§Ã£o!</strong> VocÃª precisa ter pelo menos uma conta cadastrada.
                 <br>
                 <a asp-controller="Conta" asp-action="Create" class="btn btn-sm btn-outline-danger mt-2">
                     Criar Conta
@@ -162,9 +162,9 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     
-    <script>
+        <script>
         $(document).ready(function() {
-            // Função para mostrar/esconder campos baseado no tipo
+            // FunÃ§Ã£o para mostrar/esconder campos baseado no tipo
             function toggleFields() {
                 const tipoSelecionado = $('#tipoTransacao').val();
                 
@@ -183,7 +183,7 @@
                 }
             }
             
-            // Executar na mudança do tipo
+            // Executar na mudanÃ§a do tipo
             $('#tipoTransacao').change(toggleFields);
             
             // Executar no carregamento para manter o estado

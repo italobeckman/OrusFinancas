@@ -1,35 +1,27 @@
 @model List<OrusFinancas.Services.StatusOrcamento>
 
 @{
-    ViewData["Title"] = "OrÁamentos";
+    ViewData["Title"] = "Or√ßamentos";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Meus OrÁamentos</h1>
+    <h1>Meus Or√ßamentos</h1>
     <div>
         <form asp-action="CriarOrcamentosPadrao" method="post" class="d-inline me-2">
             <button type="submit" class="btn btn-outline-secondary">
-                <i class="bi bi-magic"></i> Criar Padrıes
+                <i class="bi bi-magic"></i> Criar Padr√µes
             </button>
         </form>
         <a asp-action="Create" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Novo OrÁamento
+            <i class="bi bi-plus-circle"></i> Novo Or√ßamento
         </a>
     </div>
 </div>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-
 @if (ViewBag.Alertas != null && ((List<OrusFinancas.Services.AlertaOrcamento>)ViewBag.Alertas).Any())
 {
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <h6><i class="bi bi-exclamation-triangle"></i> Alertas de OrÁamento</h6>
+    <h6><i class="bi bi-exclamation-triangle"></i> Alertas de Or√ßamento</h6>
         <ul class="mb-0">
             @foreach (var alerta in (List<OrusFinancas.Services.AlertaOrcamento>)ViewBag.Alertas)
             {
@@ -50,7 +42,7 @@
         <div class="col-md-3">
             <div class="card text-center bg-primary text-white">
                 <div class="card-body">
-                    <h5 class="card-title">Total de OrÁamentos</h5>
+                    <h5 class="card-title">Total de Or√ßamentos</h5>
                     <h3>@Model.Count()</h3>
                 </div>
             </div>
@@ -59,7 +51,7 @@
             <div class="card text-center bg-info text-white">
                 <div class="card-body">
                     <h5 class="card-title">Limite Total</h5>
-                    <h3>@totalLimite.ToString("C")</h3>
+                    <h3>@totalLimite.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</h3>
                 </div>
             </div>
         </div>
@@ -67,7 +59,7 @@
             <div class="card text-center bg-warning text-dark">
                 <div class="card-body">
                     <h5 class="card-title">Gasto Total</h5>
-                    <h3>@totalGasto.ToString("C")</h3>
+                    <h3>@totalGasto.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</h3>
                 </div>
             </div>
         </div>
@@ -108,11 +100,11 @@
                                 <div class="row mb-3">
                                     <div class="col-6">
                                         <small class="text-muted">Limite</small>
-                                        <div class="fw-bold">@status.Orcamento.ValorLimite.ToString("C")</div>
+                                        <div class="fw-bold">@status.Orcamento.ValorLimite.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</div>
                                     </div>
                                     <div class="col-6">
                                         <small class="text-muted">Gasto</small>
-                                        <div class="fw-bold text-danger">@status.GastoAtual.ToString("C")</div>
+                                        <div class="fw-bold text-danger">@status.GastoAtual.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</div>
                                     </div>
                                 </div>
                                 
@@ -136,7 +128,7 @@
                                     <div class="col-12">
                                         <small class="text-muted">Restante</small>
                                         <div class="fw-bold @(status.ValorRestante >= 0 ? "text-success" : "text-danger")">
-                                            @status.ValorRestante.ToString("C")
+                                            @status.ValorRestante.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
                                         </div>
                                     </div>
                                 </div>
@@ -152,7 +144,7 @@
                                 {
                                     <div class="alert alert-warning mt-3 mb-0" role="alert">
                                         <i class="bi bi-exclamation-triangle"></i> 
-                                        <strong>AtenÁ„o!</strong> 80% do limite atingido.
+                                        <strong>Aten√ß√£o!</strong> 80% do limite atingido.
                                     </div>
                                 }
                             </div>
@@ -168,20 +160,20 @@ else
     <div class="card">
         <div class="card-body text-center py-5">
             <i class="bi bi-graph-up display-1 text-muted"></i>
-            <h4 class="mt-3">Nenhum orÁamento cadastrado</h4>
+            <h4 class="mt-3">Nenhum or√ßamento cadastrado</h4>
             <p class="text-muted">
-                Crie orÁamentos mensais para controlar melhor seus gastos por categoria.
+                Crie or√ßamentos mensais para controlar melhor seus gastos por categoria.
                 <br>
-                VocÍ pode comeÁar com orÁamentos padr„o ou criar os seus prÛprios.
+                Voc√™ pode come√ßar com or√ßamentos padr√£o ou criar os seus pr√≥prios.
             </p>
             <div class="mt-4">
                 <form asp-action="CriarOrcamentosPadrao" method="post" class="d-inline me-2">
                     <button type="submit" class="btn btn-outline-primary">
-                        <i class="bi bi-magic"></i> Criar OrÁamentos Padr„o
+                        <i class="bi bi-magic"></i> Criar Or√ßamentos Padr√£o
                     </button>
                 </form>
                 <a asp-action="Create" class="btn btn-success">
-                    <i class="bi bi-plus-circle"></i> Criar OrÁamento Personalizado
+                    <i class="bi bi-plus-circle"></i> Criar Or√ßamento Personalizado
                 </a>
             </div>
         </div>

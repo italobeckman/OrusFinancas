@@ -11,22 +11,6 @@
     </a>
 </div>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-
 @{
     var assinaturasAtivas = Model.Where(a => a.Ativa).ToList();
     var assinaturasInativas = Model.Where(a => !a.Ativa).ToList();
@@ -54,7 +38,7 @@
         <div class="card text-center bg-info text-white">
             <div class="card-body">
                 <h5 class="card-title">Gasto Mensal Total</h5>
-                <h3>@totalMensal.ToString("C")</h3>
+                <h3>@totalMensal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</h3>
             </div>
         </div>
     </div>
@@ -68,13 +52,13 @@
                 <table class="table table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th>ServiÁo</th>
+                            <th>Servi√ßo</th>
                             <th>Conta</th>
                             <th>Valor Mensal</th>
-                            <th>Data de InÌcio</th>
-                            <th>PrÛximo Vencimento</th>
+                            <th>Data de In√≠cio</th>
+                            <th>Pr√≥ximo Vencimento</th>
                             <th>Status</th>
-                            <th>AÁıes</th>
+                            <th>A√ß√µes</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -95,11 +79,11 @@
                                     }
                                     else
                                     {
-                                        <span class="text-muted">Conta padr„o</span>
+                                        <span class="text-muted">Conta padr√£o</span>
                                     }
                                 </td>
                                 <td class="@(assinatura.Ativa ? "text-danger" : "text-muted")">
-                                    @assinatura.ValorMensal.ToString("C")
+                                    @assinatura.ValorMensal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
                                 </td>
                                 <td>@assinatura.DataAssinatura.ToString("dd/MM/yyyy")</td>
                                 <td>
@@ -138,7 +122,7 @@
                                         @if (assinatura.Ativa)
                                         {
                                             <form asp-action="GerarDespesa" asp-route-id="@assinatura.Id" method="post" class="d-inline" title="Gerar despesa agora">
-                                                <button type="submit" class="btn btn-outline-info btn-sm" onclick="return confirm('Gerar despesa de @assinatura.ValorMensal.ToString("C") para @assinatura.Servico?')">
+                                                <button type="submit" class="btn btn-outline-info btn-sm" onclick="return confirm('Gerar despesa de @assinatura.ValorMensal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) para @assinatura.Servico?')">
                                                     <i class="bi bi-credit-card"></i>
                                                 </button>
                                             </form>
@@ -190,12 +174,12 @@
     <div class="mt-4">
         <div class="card bg-light">
             <div class="card-body">
-                <h6 class="card-title">?? Dicas</h6>
+                <h6 class="card-title">Dicas</h6>
                 <ul class="list-unstyled small mb-0">
-                    <li>?? <strong>Gerar Despesa:</strong> Clique no Ìcone de cart„o para gerar uma despesa manual</li>
-                    <li>? <strong>Autom·tico:</strong> O sistema gera despesas automaticamente no vencimento</li>
-                    <li>?? <strong>OrÁamentos:</strong> As despesas de assinaturas s„o contabilizadas nos orÁamentos</li>
-                    <li>?? <strong>RelatÛrios:</strong> Veja o impacto das assinaturas nos relatÛrios mensais</li>
+                    <li> <strong>Gerar Despesa:</strong> Clique no √≠cone de cart√£o para gerar uma despesa manual</li>
+                    <li> <strong>Autom√°tico:</strong> O sistema gera despesas automaticamente no vencimento</li>
+                    <li> <strong>Or√ßamentos:</strong> As despesas de assinaturas s√£o contabilizadas nos or√ßamentos</li>
+                    <li> <strong>Relat√≥rios:</strong> Veja o impacto das assinaturas nos relat√≥rios mensais</li>
                 </ul>
             </div>
         </div>

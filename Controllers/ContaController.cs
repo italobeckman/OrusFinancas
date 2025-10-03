@@ -40,14 +40,20 @@ namespace OrusFinancas.Controllers
                 .ToListAsync();
                 
             // 2. Cálculo do Saldo Atual (Regra de Negócio)
+            // IMPORTANTE: SaldoAtual = Soma de TODAS as transações (Receitas - Despesas)
+            // NÃO inclui o SaldoInicial no cálculo - ele é apenas referência histórica
             foreach(var conta in contas)
             {
                 var receitas = await _contexto.Receitas
-                    .Where(r => r.ContaId == conta.Id).SumAsync(r => (decimal?)r.Valor) ?? 0m;
+                    .Where(r => r.ContaId == conta.Id)
+                    .SumAsync(r => (decimal?)r.Valor) ?? 0m;
+                    
                 var despesas = await _contexto.Despesas
-                    .Where(d => d.ContaId == conta.Id).SumAsync(d => (decimal?)d.Valor) ?? 0m;
+                    .Where(d => d.ContaId == conta.Id)
+                    .SumAsync(d => (decimal?)d.Valor) ?? 0m;
 
-                conta.SaldoAtual = conta.SaldoInicial + receitas - despesas;
+                // Saldo Atual = Total de Receitas - Total de Despesas
+                conta.SaldoAtual = receitas - despesas;
             }
 
             return View(contas);

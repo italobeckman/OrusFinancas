@@ -22,13 +22,44 @@ namespace OrusFinancas.Controllers
             return int.Parse(userIdClaim?.Value ?? "0");
         }
 
-        // GET: Categoria
+        // GET: Categoria (Lista todas as categorias do usuário)
         public async Task<IActionResult> Index()
         {
             var usuarioId = GetCurrentUserId();
+            
+            if (usuarioId == 0)
+            {
+                return Unauthorized();
+            }
+
             var categorias = await _contexto.Categorias
                 .Where(c => c.UsuarioId == usuarioId)
+                .OrderBy(c => c.Nome)
                 .ToListAsync();
+
+            // Calcular gastos por categoria no mês atual
+            var mesAtual = DateTime.Today.Month;
+            var anoAtual = DateTime.Today.Year;
+            
+            var gastosPorCategoria = await _contexto.Despesas
+                .Include(d => d.Conta)
+                .Where(d => d.Conta.UsuarioId == usuarioId &&
+                           d.DataTransacao.Month == mesAtual &&
+                           d.DataTransacao.Year == anoAtual &&
+                           d.CategoriaId.HasValue)
+                .GroupBy(d => d.CategoriaId)
+                .Select(g => new 
+                {
+                    CategoriaId = g.Key.Value,
+                    Total = g.Sum(d => d.Valor)
+                })
+                .ToDictionaryAsync(x => x.CategoriaId, x => x.Total);
+            
+            var totalGeralGastos = gastosPorCategoria.Values.Sum();
+            
+            ViewBag.GastosPorCategoria = gastosPorCategoria;
+            ViewBag.TotalGeralGastos = totalGeralGastos;
+
             return View(categorias);
         }
 

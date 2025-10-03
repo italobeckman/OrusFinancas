@@ -41,6 +41,9 @@ namespace OrusFinancas.Services
                         await _contexto.Contas.FindAsync(assinatura.ContaId.Value) :
                         await _contexto.Contas.Where(c => c.UsuarioId == assinatura.UsuarioId).FirstOrDefaultAsync();
 
+                    // Se não houver conta, pular esta assinatura
+                    if (conta == null) continue;
+
                     // Buscar categoria "Assinaturas" ou criar uma genérica
                     var categoriaAssinatura = await _contexto.Categorias
                         .FirstOrDefaultAsync(c => c.UsuarioId == assinatura.UsuarioId && 
@@ -59,21 +62,18 @@ namespace OrusFinancas.Services
                         await _contexto.SaveChangesAsync();
                     }
 
-                    if (conta != null)
+                    // Criar despesa automática
+                    var despesa = new Despesa
                     {
-                        // Criar despesa automática
-                        var despesa = new Despesa
-                        {
-                            DataTransacao = hoje,
-                            Valor = assinatura.ValorMensal,
-                            Descricao = $"Assinatura - {assinatura.Servico} (Automático)",
-                            ContaId = conta.Id,
-                            CategoriaId = categoriaAssinatura.Id,
-                            AssinaturaId = assinatura.Id
-                        };
+                        DataTransacao = hoje,
+                        Valor = assinatura.ValorMensal,
+                        Descricao = $"Assinatura - {assinatura.Servico} (Automático)",
+                        ContaId = conta.Id,
+                        CategoriaId = categoriaAssinatura.Id,
+                        AssinaturaId = assinatura.Id
+                    };
 
-                        _contexto.Despesas.Add(despesa);
-                    }
+                    _contexto.Despesas.Add(despesa);
                 }
             }
 
@@ -105,98 +105,94 @@ namespace OrusFinancas.Services
                 .SumAsync(a => a.ValorMensal);
         }
 
+        /// <summary>
+        /// Gerar despesas manualmente para uma assinatura específica
+        /// </summary>
+        /// <param name="assinaturaId">ID da assinatura</param>
+        /// <param name="usuarioId">ID do usuário logado (para validação de segurança)</param>
+        public async Task<bool> GerarDespesaAssinatura(int assinaturaId, int usuarioId)
+        {
+            // CORREÇÃO PRINCIPAL: Validar que a assinatura pertence ao usuário logado
+            var assinatura = await _contexto.Assinaturas
+                .Include(a => a.Usuario)
+                .FirstOrDefaultAsync(a => a.Id == assinaturaId && 
+                                         a.UsuarioId == usuarioId && 
+                                         a.Ativa);
 
+            if (assinatura == null) return false;
 
-            /// <summary>
-            /// Gerar despesas manualmente para uma assinatura específica
-            /// </summary>
-            public async Task<bool> GerarDespesaAssinatura(int assinaturaId)
+            var hoje = DateTime.Today;
+
+            // Verifica se já existe transação para hoje
+            var transacaoExistente = await _contexto.Despesas
+                .AnyAsync(d => d.AssinaturaId == assinaturaId &&
+                               d.DataTransacao.Date == hoje);
+
+            if (transacaoExistente) return false;
+
+            // Buscar ou criar categoria de assinaturas
+            var categoria = await _contexto.Categorias
+                .FirstOrDefaultAsync(c => c.UsuarioId == usuarioId &&
+                                         c.Nome.ToLower().Contains("assinatura"));
+
+            if (categoria == null)
             {
-                var assinatura = await _contexto.Assinaturas
-                    .Include(a => a.Usuario)
-                    .FirstOrDefaultAsync(a => a.Id == assinaturaId && a.Ativa);
-
-                if (assinatura == null) return false;
-
-                var hoje = DateTime.Today;
-
-                // Verifica se já existe transação para hoje
-                var transacaoExistente = await _contexto.Despesas
-                    .AnyAsync(d => d.AssinaturaId == assinaturaId &&
-                                   d.DataTransacao.Date == hoje);
-
-                if (transacaoExistente) return false;
-
-                // Buscar ou criar categoria de assinaturas
-                var categoria = await _contexto.Categorias
-                    .FirstOrDefaultAsync(c => c.UsuarioId == assinatura.UsuarioId &&
-                                             c.Nome.ToLower().Contains("assinatura"));
-
-                if (categoria == null)
+                categoria = new Categoria
                 {
-                    categoria = new Categoria
-                    {
-                        Nome = "Assinaturas",
-                        TipoCategoria = TipoCategoria.Despesa,
-                        UsuarioId = assinatura.UsuarioId
-                    };
-                    _contexto.Categorias.Add(categoria);
-                    await _contexto.SaveChangesAsync();
-                }
-
-                // --- Lógica Corrigida para a Conta ---
-                // Primeiro, verifique se a assinatura tem uma conta específica.
-                int? contaId = assinatura.ContaId;
-
-                // Se a assinatura não tem uma conta específica, encontre ou crie uma conta padrão.
-                if (!contaId.HasValue)
-                {
-                    var contaPadrao = await _contexto.Contas
-                        .Where(c => c.UsuarioId == assinatura.UsuarioId)
-                        .FirstOrDefaultAsync();
-
-                    // Se o usuário não tiver nenhuma conta, crie uma "Conta Padrão"
-                    if (contaPadrao == null)
-                    {
-                        contaPadrao = new Conta
-                        {
-                            NomeBanco = Bancos.ContaPadrao,
-                            UsuarioId = assinatura.UsuarioId
-                        };
-                        _contexto.Contas.Add(contaPadrao);
-                        await _contexto.SaveChangesAsync();
-                    }
-                    contaId = contaPadrao.Id;
-                }
-
-                // Se ainda não tivermos um ID de conta válido, algo está errado.
-                if (!contaId.HasValue) return false;
-
-                // Criar despesa
-                var despesa = new Despesa
-                {
-                    DataTransacao = hoje,
-                    Valor = assinatura.ValorMensal,
-                    Descricao = $"Assinatura - {assinatura.Servico}",
-                    ContaId = contaId.Value, // Use o ID de conta válido aqui
-                    CategoriaId = categoria.Id,
-                    AssinaturaId = assinatura.Id
+                    Nome = "Assinaturas",
+                    TipoCategoria = TipoCategoria.Despesa,
+                    UsuarioId = usuarioId
                 };
-
-                _contexto.Despesas.Add(despesa);
+                _contexto.Categorias.Add(categoria);
                 await _contexto.SaveChangesAsync();
+            }
 
+            // Buscar conta
+            Conta? conta = null;
+            
+            if (assinatura.ContaId.HasValue)
+            {
+                conta = await _contexto.Contas
+                    .FirstOrDefaultAsync(c => c.Id == assinatura.ContaId.Value && 
+                                             c.UsuarioId == usuarioId);
+            }
+            
+            // Se não há conta especificada ou ela não pertence ao usuário, buscar qualquer conta do usuário
+            if (conta == null)
+            {
+                conta = await _contexto.Contas
+                    .Where(c => c.UsuarioId == usuarioId)
+                    .FirstOrDefaultAsync();
+            }
+
+            // Se o usuário não tem conta, não pode gerar a despesa
+            if (conta == null)
+            {
+                return false;
+            }
+
+            // Criar despesa
+            var despesa = new Despesa
+            {
+                DataTransacao = hoje,
+                Valor = assinatura.ValorMensal,
+                Descricao = $"Assinatura - {assinatura.Servico}",
+                ContaId = conta.Id,
+                CategoriaId = categoria.Id,
+                AssinaturaId = assinatura.Id
+            };
+
+            _contexto.Despesas.Add(despesa);
+            
+            try
+            {
+                await _contexto.SaveChangesAsync();
                 return true;
             }
-      
-
-        private async Task<int> GetContaPadraoUsuario(int usuarioId)
-        {
-            var conta = await _contexto.Contas
-                .Where(c => c.UsuarioId == usuarioId)
-                .FirstOrDefaultAsync();
-                
-            return conta?.Id ?? 0;
+            catch (DbUpdateException)
+            {
+                return false;
+            }
         }
     }
 }
