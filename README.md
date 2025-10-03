@@ -30,6 +30,9 @@ Sistema completo para gestão financeira pessoal desenvolvido em ASP.NET Core 8 
   - [x] Associação com contas e categorias
   - [x] Filtros por data, conta e categoria
 
+  ![Tela de transações](docs/Tela%20de%20transações.png)
+
+
 ### 🔄 Gestão de Assinaturas (Recorrências)
 
   - [x] Cadastro de serviços recorrentes
